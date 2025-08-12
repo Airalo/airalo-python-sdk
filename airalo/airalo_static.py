@@ -20,7 +20,7 @@ from .services.order_service import OrderService
 from .services.topup_service import TopupService
 # from .services.voucher_service import VoucherService
 # from .services.exchange_rates_service import ExchangeRatesService
-# from .services.future_order_service import FutureOrderService
+from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
 # from .services.catalog_service import CatalogService
 
@@ -51,7 +51,7 @@ class AiraloStatic:
     _topup: Optional[TopupService] = None
     # _voucher: Optional[VoucherService] = None
     # _exchange_rates: Optional[ExchangeRatesService] = None
-    # _future_orders: Optional[FutureOrderService] = None
+    _future_orders: Optional[FutureOrderService] = None
     # _instruction: Optional[InstallationInstructionsService] = None
     # _catalog: Optional[CatalogService] = None
 
@@ -135,6 +135,9 @@ class AiraloStatic:
             cls._config, cls._http, cls._access_token
         )
         cls._topup = cls._pool.get('topup') or TopupService(
+            cls._config, cls._http, cls._signature, cls._access_token
+        )
+        cls._future_orders = cls._pool.get('future_orders') or FutureOrderService(
             cls._config, cls._http, cls._signature, cls._access_token
         )
         # Additional services will be initialized here as implemented
@@ -491,3 +494,35 @@ class AiraloStatic:
         """
         cls._check_initialized()
         return cls._installation_instructions.get_instructions(params or {})
+
+    # =====================================================
+    # Future Order Methods
+    # =====================================================
+
+    @classmethod
+    def create_future_order(cls, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Create a future order.
+
+        Args:
+            payload: Dictionary containing order details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        cls._check_initialized()
+        return cls._future_orders.create_future_order(payload)
+
+    @classmethod
+    def cancel_future_order(cls, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Cancel a future order.
+
+        Args:
+            payload: Dictionary containing cancellation details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        cls._check_initialized()
+        return cls._future_orders.cancel_future_order(payload)

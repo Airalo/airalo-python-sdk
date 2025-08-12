@@ -22,7 +22,7 @@ from .services.topup_service import TopupService
 
 # from .services.voucher_service import VoucherService
 # from .services.exchange_rates_service import ExchangeRatesService
-# from .services.future_order_service import FutureOrderService
+from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
 # from .services.catalog_service import CatalogService
 
@@ -60,7 +60,8 @@ class Airalo:
                     'signature': self._signature,
                     'oauth': self._oauth,
                     'installation_instructions': self._installation_instructions,
-                    'topup': self._topup
+                    'topup': self._topup,
+                    'future_order': self._future_order
                     # Services will be added as implemented
                 }
         except Exception as e:
@@ -124,6 +125,9 @@ class Airalo:
         )
         self._installation_instructions = self._pool.get('installation_instructions') or InstallationInstructionsService(
             self._config, self._http, self._access_token
+        )
+        self._future_order = self._pool.get("future_order") or FutureOrderService(
+            self._config, self._http, self._signature, self._access_token
         )
 
         # self._order = self._pool.get('order') or OrderService(
@@ -467,3 +471,31 @@ class Airalo:
             EasyAccess-wrapped data or None
         """
         return self._installation_instructions.get_instructions(params or {})
+
+    # =====================================================
+    # Future Order Methods
+    # =====================================================
+
+    def create_future_order(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Create a future order.
+
+        Args:
+            payload: Dictionary containing order details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        return self._future_order.create_future_order(payload)
+
+    def cancel_future_order(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Cancel a future order.
+
+        Args:
+            payload: Dictionary containing cancellation details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        return self._future_order.cancel_future_order(payload)

@@ -21,7 +21,7 @@ from .services.order_service import OrderService
 # from .services.voucher_service import VoucherService
 # from .services.exchange_rates_service import ExchangeRatesService
 # from .services.future_order_service import FutureOrderService
-# from .services.installation_instructions_service import InstallationInstructionsService
+from .services.installation_instructions_service import InstallationInstructionsService
 # from .services.catalog_service import CatalogService
 
 
@@ -57,6 +57,7 @@ class Airalo:
                     'multi_curl': self._multi_http,
                     'signature': self._signature,
                     'oauth': self._oauth,
+                    'installation_instructions': self._installation_instructions,
                     # Services will be added as implemented
                 }
         except Exception as e:
@@ -111,6 +112,10 @@ class Airalo:
         self._order = self._pool.get('order') or OrderService(
             self._config, self._http, self._multi_http, self._signature, self._access_token
         )
+        self._installation_instructions = self._pool.get('installation_instructions') or InstallationInstructionsService(
+            self._config, self._http, self._access_token
+        )
+
         # self._order = self._pool.get('order') or OrderService(
         #     self._config, self._http, self._multi_http, self._signature, self._access_token
         # )
@@ -372,3 +377,20 @@ class Airalo:
     def __repr__(self) -> str:
         """String representation of Airalo client."""
         return f"<Airalo(env='{self.get_environment()}')>"
+
+
+    # =====================================================
+    # Installation Instruction Methods
+    # =====================================================
+
+    def get_installation_instructions(self, params: Optional[Dict[str, Any]] = None) -> Optional[Any]:
+        """
+        Get installation instructions for a given ICCID and language.
+
+        Args:
+            params: Dictionary with at least 'iccid' key, optionally 'language'.
+
+        Returns:
+            EasyAccess-wrapped data or None
+        """
+        return self._installation_instructions.get_instructions(params or {})

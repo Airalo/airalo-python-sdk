@@ -21,7 +21,7 @@ from .services.order_service import OrderService
 # from .services.voucher_service import VoucherService
 # from .services.exchange_rates_service import ExchangeRatesService
 # from .services.future_order_service import FutureOrderService
-# from .services.installation_instructions_service import InstallationInstructionsService
+from .services.installation_instructions_service import InstallationInstructionsService
 # from .services.catalog_service import CatalogService
 
 
@@ -41,6 +41,8 @@ class AiraloStatic:
     _signature: Optional[Signature] = None
     _oauth: Optional[OAuthService] = None
     _access_token: Optional[str] = None
+    _installation_instructions: Optional[InstallationInstructionsService] = None
+
 
     # Service instances
     _packages: Optional[PackagesService] = None
@@ -129,6 +131,10 @@ class AiraloStatic:
         cls._order = cls._pool.get('order') or OrderService(
             cls._config, cls._http, cls._multi_http, cls._signature, cls._access_token
         )
+        cls._installation_instructions = cls._pool.get('installation_instructions') or InstallationInstructionsService(
+            cls._config, cls._http, cls._access_token
+        )
+
         # Additional services will be initialized here as implemented
 
     @classmethod
@@ -441,3 +447,21 @@ class AiraloStatic:
         cls._packages = None
         cls._order = None
         # Reset other services as they're added
+
+    # =====================================================
+    # Installation Instruction Methods
+    # =====================================================
+
+    @classmethod
+    def get_installation_instructions(cls, params: Optional[Dict[str, Any]] = None) -> Optional[Any]:
+        """
+        Get installation instructions for a given ICCID and language.
+
+        Args:
+            params: Dictionary with at least 'iccid' key, optionally 'language'.
+
+        Returns:
+            EasyAccess-wrapped data or None
+        """
+        cls._check_initialized()
+        return cls._installation_instructions.get_instructions(params or {})

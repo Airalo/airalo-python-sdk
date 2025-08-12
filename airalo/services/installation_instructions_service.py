@@ -23,17 +23,15 @@ class InstallationInstructionsService:
 
         url = self._build_url(params)
 
-        def fetch():
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {self.access_token}',
-                'Accept-Language': params.get('language', '')
-            }
-            response = self.curl.set_headers(headers).get(url)
-            result = json.loads(response)
-            return result
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.access_token}',
+            'Accept-Language': params.get('language', '')
+        }
+        response = self.curl.set_headers(headers).get(url)
+        result = json.loads(response)
 
-        result = Cached.get(fetch, self._get_key(url, params), 3600)
+        result = Cached.get(result, self._get_key(url, params), 3600)
 
         if result and result['data']:
             return result

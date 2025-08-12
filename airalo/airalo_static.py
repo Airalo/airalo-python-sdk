@@ -17,7 +17,7 @@ from .services.order_service import OrderService
 
 # We'll import these as we implement them
 # from .services.sim_service import SimService
-# from .services.topup_service import TopupService
+from .services.topup_service import TopupService
 # from .services.voucher_service import VoucherService
 # from .services.exchange_rates_service import ExchangeRatesService
 # from .services.future_order_service import FutureOrderService
@@ -48,7 +48,7 @@ class AiraloStatic:
     _packages: Optional[PackagesService] = None
     _order: Optional[OrderService] = None
     # _sim: Optional[SimService] = None
-    # _topup: Optional[TopupService] = None
+    _topup: Optional[TopupService] = None
     # _voucher: Optional[VoucherService] = None
     # _exchange_rates: Optional[ExchangeRatesService] = None
     # _future_orders: Optional[FutureOrderService] = None
@@ -134,7 +134,9 @@ class AiraloStatic:
         cls._installation_instructions = cls._pool.get('installation_instructions') or InstallationInstructionsService(
             cls._config, cls._http, cls._access_token
         )
-
+        cls._topup = cls._pool.get('topup') or TopupService(
+            cls._config, cls._http, cls._signature, cls._access_token
+        )
         # Additional services will be initialized here as implemented
 
     @classmethod
@@ -401,6 +403,30 @@ class AiraloStatic:
         if not packages:
             return None
         return cls._order.create_order_async_bulk(packages, webhook_url, description)
+
+    @classmethod
+    def topup(
+        cls, package_id: str, iccid: str, description: Optional[str] = None
+    ) -> Optional[Dict]:
+        """
+        Create a top-up for a SIM.
+
+        Args:
+            package_id: Package ID to top-up
+            iccid: ICCID of the SIM to top-up
+            description: Top-up description
+        Returns:
+            Top-up data or None
+        """
+        cls._check_initialized()
+
+        return cls._topup.create_topup(
+            {
+                "package_id": package_id,
+                "iccid": iccid,
+                "description": description or "Topup placed via Airalo Python SDK",
+            }
+        )
 
     # =====================================================
     # Utility Methods

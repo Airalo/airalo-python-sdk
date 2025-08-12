@@ -25,7 +25,7 @@ class SdkConstants:
     DEFAULT_RETRY_COUNT = 2
 
     # Cache settings
-    DEFAULT_CACHE_TTL = 86400  # 24 hours in seconds
+    DEFAULT_CACHE_TTL = 3600  # 1 hour in seconds
     TOKEN_CACHE_TTL = 3600  # 1 hour in seconds
 
     # Concurrency settings

@@ -3,6 +3,7 @@ import hashlib
 
 from ..config import Config
 from ..constants.api_constants import ApiConstants
+from ..constants.sdk_constants import SdkConstants
 from ..helpers.cached import Cached
 from ..resources.http_resource import HttpResource
 from ..exceptions.airalo_exception import AiraloException
@@ -23,6 +24,13 @@ class InstallationInstructionsService:
 
         url = self._build_url(params)
 
+        result = Cached.get(lambda: self._fetch(url, params), self._get_key(url, params), SdkConstants.DEFAULT_CACHE_TTL)
+
+        if result and result['data']:
+            return result
+        return None
+
+    def _fetch(self, url, params):
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {self.access_token}',
@@ -30,12 +38,7 @@ class InstallationInstructionsService:
         }
         response = self.curl.set_headers(headers).get(url)
         result = json.loads(response)
-
-        result = Cached.get(result, self._get_key(url, params), 3600)
-
-        if result and result['data']:
-            return result
-        return None
+        return result
 
     def _build_url(self, params):
         if 'iccid' not in params:

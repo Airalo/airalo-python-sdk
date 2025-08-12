@@ -9,6 +9,7 @@ import os
 import pickle
 import tempfile
 import time
+from ..constants.sdk_constants import SdkConstants
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
 
@@ -22,7 +23,6 @@ class Cached:
     """
 
     CACHE_KEY_PREFIX = "airalo_"
-    DEFAULT_TTL = 86400  # 24 hours in seconds
 
     _cache_path: Optional[Path] = None
     _cache_name: str = ""
@@ -127,15 +127,14 @@ class Cached:
         # Check TTL
         now = time.time()
         file_mtime = cache_file.stat().st_mtime
-        ttl = custom_ttl if custom_ttl > 0 else cls.DEFAULT_TTL
+        ttl = custom_ttl if custom_ttl > 0 else SdkConstants.DEFAULT_CACHE_TTL
 
         if now - file_mtime > ttl:
             # Cache expired, remove file
             try:
                 cache_file.unlink()
             except OSError:
-                pass
-            return None
+                return None
 
         # Read cached data
         try:
@@ -146,8 +145,7 @@ class Cached:
             try:
                 cache_file.unlink()
             except OSError:
-                pass
-            return None
+                return None
 
     @classmethod
     def _cache_this(cls, cache_id: str, result: Any) -> Any:

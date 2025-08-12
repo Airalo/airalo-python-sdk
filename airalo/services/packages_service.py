@@ -88,7 +88,7 @@ class PackagesService:
         Returns:
             Combined packages data
         """
-        current_page = params.get('page', 1)
+        current_page = params.get('page') or 1
         limit = params.get('limit')
         result = {'data': []}
 
@@ -199,6 +199,8 @@ class PackagesService:
 
                 # Process each package
                 for package in operator.get('packages', []):
+                    image = operator.get('image', {})
+
                     flattened_package = {
                         'package_id': package.get('id'),
                         'slug': item.get('slug'),
@@ -221,7 +223,7 @@ class PackagesService:
                             'info': operator.get('info'),
                         },
                         'countries': countries,
-                        'image': operator.get('image', {}).get('url'),
+                        'image': image.get('url') if image else None,
                         'other_info': operator.get('other_info'),
                     }
                     flattened['data'].append(flattened_package)

@@ -98,7 +98,6 @@ class PackagesService:
 
             # Make request
             self._http.set_headers({
-                'Content-Type': 'application/json',
                 'Authorization': f'Bearer {self._access_token}'
             })
 

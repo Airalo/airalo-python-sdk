@@ -1,5 +1,6 @@
 .cache
 .idea
+.venv
 *.egg-info/
 .DS_Store
 test.py

@@ -32,7 +32,6 @@ class InstallationInstructionsService:
 
     def _fetch(self, url, params):
         headers = {
-            'Content-Type': 'application/json',
             'Authorization': f'Bearer {self.access_token}',
             'Accept-Language': params.get('language', '')
         }

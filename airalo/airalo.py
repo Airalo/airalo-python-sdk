@@ -15,17 +15,9 @@ from .services.oauth_service import OAuthService
 
 from .services.packages_service import PackagesService
 from .services.order_service import OrderService
-
-# from .services.order_service import OrderService
-# from .services.sim_service import SimService
 from .services.topup_service import TopupService
-
-# from .services.voucher_service import VoucherService
-# from .services.exchange_rates_service import ExchangeRatesService
 from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
-# from .services.catalog_service import CatalogService
-
 
 class Airalo:
     """
@@ -130,11 +122,6 @@ class Airalo:
             self._config, self._http, self._signature, self._access_token
         )
 
-        # self._order = self._pool.get('order') or OrderService(
-        #     self._config, self._http, self._multi_http, self._signature, self._access_token
-        # )
-        # ... etc
-
     # =====================================================
     # OAuth Methods
     # =====================================================
@@ -159,7 +146,7 @@ class Airalo:
         return self._access_token
 
     # =====================================================
-    # Package Methods (Placeholders for now)
+    # Package Methods
     # =====================================================
 
     def get_all_packages(
@@ -255,7 +242,7 @@ class Airalo:
         return self._packages.get_country_packages(country_code, flat, limit)
 
     # =====================================================
-    # Order Methods (Placeholders)
+    # Order Methods
     # =====================================================
 
     def order(

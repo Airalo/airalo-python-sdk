@@ -15,15 +15,9 @@ from .services.oauth_service import OAuthService
 from .services.packages_service import PackagesService
 from .services.order_service import OrderService
 
-# We'll import these as we implement them
-# from .services.sim_service import SimService
 from .services.topup_service import TopupService
-# from .services.voucher_service import VoucherService
-# from .services.exchange_rates_service import ExchangeRatesService
 from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
-# from .services.catalog_service import CatalogService
-
 
 class AiraloStatic:
     """
@@ -43,17 +37,11 @@ class AiraloStatic:
     _access_token: Optional[str] = None
     _installation_instructions: Optional[InstallationInstructionsService] = None
 
-
     # Service instances
     _packages: Optional[PackagesService] = None
     _order: Optional[OrderService] = None
-    # _sim: Optional[SimService] = None
     _topup: Optional[TopupService] = None
-    # _voucher: Optional[VoucherService] = None
-    # _exchange_rates: Optional[ExchangeRatesService] = None
     _future_orders: Optional[FutureOrderService] = None
-    # _instruction: Optional[InstallationInstructionsService] = None
-    # _catalog: Optional[CatalogService] = None
 
     @classmethod
     def init(cls, config: Union[Dict[str, Any], Config, str]) -> None:

@@ -43,7 +43,9 @@ class MultiHttpResource:
         # Default headers
         self._default_headers: Dict[str, str] = {
             'User-Agent': f'Airalo-Python-SDK/{SdkConstants.VERSION}',
+            'airalo-python-sdk': f'{SdkConstants.VERSION}',
             'Accept': 'application/json',
+            'Content-Type': 'application/json',
         }
 
     def add(self, method_name: str, args: List[Any]) -> 'MultiHttpResource':

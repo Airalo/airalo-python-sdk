@@ -14,6 +14,7 @@ from ..constants.api_constants import ApiConstants
 from ..constants.sdk_constants import SdkConstants
 from ..exceptions.airalo_exception import AiraloException, ValidationError, APIError
 from ..helpers.signature import Signature
+from ..helpers.cloud_sim_share_validator import CloudSimShareValidator
 from ..resources.http_resource import HttpResource
 from ..resources.multi_http_resource import MultiHttpResource
 
@@ -111,7 +112,7 @@ class OrderService:
             Order response data or None
         """
         self._validate_order(payload)
-        self._validate_cloud_sim_share(esim_cloud, required_fields=['to_email', 'sharing_option'])
+        self._validate_cloud_sim_share(esim_cloud)
 
         # Add email sharing to payload
         payload['to_email'] = esim_cloud['to_email']
@@ -261,7 +262,7 @@ class OrderService:
             packages = packages_dict
 
         self._validate_bulk_order(packages)
-        self._validate_cloud_sim_share(esim_cloud, required_fields=['to_email', 'sharing_option'])
+        self._validate_cloud_sim_share(esim_cloud)
 
         if not packages:
             return None
@@ -377,7 +378,6 @@ class OrderService:
             Headers dictionary
         """
         return {
-            'Content-Type': 'application/json',
             'Authorization': f'Bearer {self._access_token}',
             'airalo-signature': self._signature.get_signature(payload)
         }
@@ -420,61 +420,15 @@ class OrderService:
                 f'The packages count may not be greater than {SdkConstants.BULK_ORDER_LIMIT}'
             )
 
-    def _validate_cloud_sim_share(self, esim_cloud: Dict[str, Any],
-                                  required_fields: List[str]) -> None:
+    def _validate_cloud_sim_share(self, sim_cloud_share: Dict[str, Any]) -> None:
         """
-        Validate email SIM sharing configuration.
+        Validate email SIM sharing configuration using CloudSimShareValidator.
 
         Args:
-            esim_cloud: Email sharing configuration
-            required_fields: List of required field names
+            sim_cloud_share: Email sharing configuration
 
         Raises:
             ValidationError: If validation fails
         """
-        import re
-
-        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        allowed_sharing_options = ['link', 'pdf']
-
-        # Check required fields
-        for field in required_fields:
-            if field not in esim_cloud or not esim_cloud[field]:
-                raise ValidationError(
-                    f'The {field} is required for email SIM sharing, '
-                    f'payload: {json.dumps(esim_cloud)}'
-                )
-
-        # Validate to_email
-        if 'to_email' in esim_cloud:
-            if not re.match(email_regex, esim_cloud['to_email']):
-                raise ValidationError(
-                    f'The to_email must be a valid email address, '
-                    f'payload: {json.dumps(esim_cloud)}'
-                )
-
-        # Validate sharing_option
-        if 'sharing_option' in esim_cloud:
-            options = esim_cloud['sharing_option']
-            if not isinstance(options, list):
-                options = [options]
-
-            for option in options:
-                if option not in allowed_sharing_options:
-                    raise ValidationError(
-                        f'The sharing_option must be one of {allowed_sharing_options}, '
-                        f'payload: {json.dumps(esim_cloud)}'
-                    )
-
-        # Validate copy_address emails
-        if esim_cloud.get('copy_address'):
-            cc_emails = esim_cloud['copy_address']
-            if not isinstance(cc_emails, list):
-                cc_emails = [cc_emails]
-
-            for email in cc_emails:
-                if not re.match(email_regex, email):
-                    raise ValidationError(
-                        f'The copy_address email "{email}" must be valid, '
-                        f'payload: {json.dumps(esim_cloud)}'
-                    )
+        # Use CloudSimShareValidator with required fields for order service
+        CloudSimShareValidator.validate(sim_cloud_share, required_fields=['to_email', 'sharing_option'])

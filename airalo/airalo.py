@@ -15,17 +15,9 @@ from .services.oauth_service import OAuthService
 
 from .services.packages_service import PackagesService
 from .services.order_service import OrderService
-
-# from .services.order_service import OrderService
-# from .services.sim_service import SimService
 from .services.topup_service import TopupService
-
-# from .services.voucher_service import VoucherService
-# from .services.exchange_rates_service import ExchangeRatesService
-# from .services.future_order_service import FutureOrderService
-# from .services.installation_instructions_service import InstallationInstructionsService
-# from .services.catalog_service import CatalogService
-
+from .services.future_order_service import FutureOrderService
+from .services.installation_instructions_service import InstallationInstructionsService
 
 class Airalo:
     """
@@ -54,11 +46,14 @@ class Airalo:
             # Store resources in pool for reuse
             if not self._pool:
                 self._pool = {
-                    "config": self._config,
-                    "curl": self._http,
-                    "multi_curl": self._multi_http,
-                    "signature": self._signature,
-                    "oauth": self._oauth,
+                    'config': self._config,
+                    'curl': self._http,
+                    'multi_curl': self._multi_http,
+                    'signature': self._signature,
+                    'oauth': self._oauth,
+                    'installation_instructions': self._installation_instructions,
+                    'topup': self._topup,
+                    'future_order': self._future_order
                     # Services will be added as implemented
                 }
         except Exception as e:
@@ -120,10 +115,12 @@ class Airalo:
         self._topup = self._pool.get("topup") or TopupService(
             self._config, self._http, self._signature, self._access_token
         )
-        # self._order = self._pool.get('order') or OrderService(
-        #     self._config, self._http, self._multi_http, self._signature, self._access_token
-        # )
-        # ... etc
+        self._installation_instructions = self._pool.get('installation_instructions') or InstallationInstructionsService(
+            self._config, self._http, self._access_token
+        )
+        self._future_order = self._pool.get("future_order") or FutureOrderService(
+            self._config, self._http, self._signature, self._access_token
+        )
 
     # =====================================================
     # OAuth Methods
@@ -149,7 +146,7 @@ class Airalo:
         return self._access_token
 
     # =====================================================
-    # Package Methods (Placeholders for now)
+    # Package Methods
     # =====================================================
 
     def get_all_packages(
@@ -245,7 +242,7 @@ class Airalo:
         return self._packages.get_country_packages(country_code, flat, limit)
 
     # =====================================================
-    # Order Methods (Placeholders)
+    # Order Methods
     # =====================================================
 
     def order(
@@ -444,3 +441,48 @@ class Airalo:
     def __repr__(self) -> str:
         """String representation of Airalo client."""
         return f"<Airalo(env='{self.get_environment()}')>"
+
+
+    # =====================================================
+    # Installation Instruction Methods
+    # =====================================================
+
+    def get_installation_instructions(self, params: Optional[Dict[str, Any]] = None) -> Optional[Any]:
+        """
+        Get installation instructions for a given ICCID and language.
+
+        Args:
+            params: Dictionary with at least 'iccid' key, optionally 'language'.
+
+        Returns:
+            EasyAccess-wrapped data or None
+        """
+        return self._installation_instructions.get_instructions(params or {})
+
+    # =====================================================
+    # Future Order Methods
+    # =====================================================
+
+    def create_future_order(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Create a future order.
+
+        Args:
+            payload: Dictionary containing order details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        return self._future_order.create_future_order(payload)
+
+    def cancel_future_order(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Cancel a future order.
+
+        Args:
+            payload: Dictionary containing cancellation details.
+
+        Returns:
+            Response data as dictionary or None.
+        """
+        return self._future_order.cancel_future_order(payload)

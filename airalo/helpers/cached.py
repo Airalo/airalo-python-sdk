@@ -18,8 +18,8 @@ class Cached:
     """
     File-based caching utility.
 
-    Provides simple file-based caching with TTL support using the system's
-    temporary directory.
+    Provides simple file-based caching with TTL support using
+    project root cache directory.
     """
 
     CACHE_KEY_PREFIX = "airalo_"
@@ -85,8 +85,6 @@ class Cached:
             cache_name: Optional cache name to set
         """
         if cls._cache_path is None:
-            # Use system temp directory
-            # cls._cache_path = Path(tempfile.gettempdir())
             # Use project root cache directory
             cls._cache_path = Path(__file__).resolve().parent.parent.parent / ".cache"
             cls._cache_path.mkdir(parents=True, exist_ok=True)

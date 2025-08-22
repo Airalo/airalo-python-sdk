@@ -18,6 +18,7 @@ from .services.order_service import OrderService
 from .services.topup_service import TopupService
 from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
+from .services.compatibility_devices_service import CompatibilityDevicesService
 
 class AiraloStatic:
     """
@@ -42,6 +43,7 @@ class AiraloStatic:
     _order: Optional[OrderService] = None
     _topup: Optional[TopupService] = None
     _future_orders: Optional[FutureOrderService] = None
+    _compatibility_devices: Optional[CompatibilityDevicesService] = None
 
     @classmethod
     def init(cls, config: Union[Dict[str, Any], Config, str]) -> None:
@@ -127,6 +129,9 @@ class AiraloStatic:
         )
         cls._future_orders = cls._pool.get('future_orders') or FutureOrderService(
             cls._config, cls._http, cls._signature, cls._access_token
+        )
+        cls._compatibility_devices = cls._pool.get('compatibility_devices') or CompatibilityDevicesService(
+            cls._config, cls._http, cls._access_token
         )
         # Additional services will be initialized here as implemented
 
@@ -463,6 +468,8 @@ class AiraloStatic:
         cls._access_token = None
         cls._packages = None
         cls._order = None
+        cls._future_orders = None
+        cls._compatibility_devices = None
         # Reset other services as they're added
 
     # =====================================================
@@ -478,7 +485,7 @@ class AiraloStatic:
             params: Dictionary with at least 'iccid' key, optionally 'language'.
 
         Returns:
-            EasyAccess-wrapped data or None
+            Response data as dictionary or None
         """
         cls._check_initialized()
         return cls._installation_instructions.get_instructions(params or {})
@@ -514,3 +521,18 @@ class AiraloStatic:
         """
         cls._check_initialized()
         return cls._future_orders.cancel_future_order(payload)
+
+    # =====================================================
+    # Compatible devices Methods
+    # =====================================================
+
+    @classmethod
+    def get_compatible_devices(cls) -> Optional[Any]:
+        """
+        Get compatible devices from Airalo API.
+
+        Returns:
+            Response data as dictionary or None
+        """
+        cls._check_initialized()
+        return cls._compatibility_devices.get_compatible_devices()

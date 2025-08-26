@@ -14,11 +14,14 @@ from .exceptions.airalo_exception import AiraloException
 from .resources.multi_http_resource import MultiHttpResource
 
 from .services.sim_service import SimService
+from .services.oauth_service import OAuthService
+from .services.packages_service import PackagesService
 from .services.order_service import OrderService
 from .services.topup_service import TopupService
 from .services.packages_service import PackagesService
 from .services.future_order_service import FutureOrderService
 from .services.installation_instructions_service import InstallationInstructionsService
+from .services.compatibility_devices_service import CompatibilityDevicesService
 
 class Airalo:
     """
@@ -55,6 +58,7 @@ class Airalo:
                     'installation_instructions': self._installation_instructions,
                     'topup': self._topup,
                     'future_order': self._future_order,
+                    'compatibility_devices': self._compatibility_devices
                     'sim': self._sim
                     # Services will be added as implemented
                 }
@@ -123,6 +127,10 @@ class Airalo:
         self._future_order = self._pool.get("future_order") or FutureOrderService(
             self._config, self._http, self._signature, self._access_token
         )
+        self._compatibility_devices = self._pool.get("compatibility_devices") or CompatibilityDevicesService(
+            self._config, self._http, self._access_token
+        )
+
         self._sim = self._pool.get('sim') or SimService(
             self._config, self._http, self._multi_http, self._access_token
         )
@@ -460,7 +468,7 @@ class Airalo:
             params: Dictionary with at least 'iccid' key, optionally 'language'.
 
         Returns:
-            EasyAccess-wrapped data or None
+             Response data as dictionary or None
         """
         return self._installation_instructions.get_instructions(params or {})
 
@@ -491,6 +499,19 @@ class Airalo:
             Response data as dictionary or None.
         """
         return self._future_order.cancel_future_order(payload)
+
+    # =====================================================
+    # Compatible devices Methods
+    # =====================================================
+
+    def get_compatible_devices(self) -> Optional[Any]:
+        """
+        Fetch compatible devices from Airalo API.
+
+        Returns:
+            Response data as dictionary or None
+        """
+        return self._compatibility_devices.get_compatible_devices()
 
     # =====================================================
     # SIM Methods

@@ -7,17 +7,18 @@ This module provides the main Airalo client class for SDK operations.
 from typing import Any, Dict, List, Optional, Union
 
 from .config import Config
-from .exceptions.airalo_exception import AiraloException
 from .helpers.signature import Signature
-from .resources.http_resource import HttpResource
-from .resources.multi_http_resource import MultiHttpResource
+from .services.sim_service import SimService
 from .services.oauth_service import OAuthService
-from .services.packages_service import PackagesService
 from .services.order_service import OrderService
 from .services.topup_service import TopupService
+from .resources.http_resource import HttpResource
+from .services.packages_service import PackagesService
+from .exceptions.airalo_exception import AiraloException
+from .resources.multi_http_resource import MultiHttpResource
 from .services.future_order_service import FutureOrderService
-from .services.installation_instructions_service import InstallationInstructionsService
 from .services.compatibility_devices_service import CompatibilityDevicesService
+from .services.installation_instructions_service import InstallationInstructionsService
 
 class Airalo:
     """
@@ -54,9 +55,8 @@ class Airalo:
                     'installation_instructions': self._installation_instructions,
                     'topup': self._topup,
                     'future_order': self._future_order,
-                    'compatibility_devices': self._compatibility_devices
-
-                    # Services will be added as implemented
+                    'compatibility_devices': self._compatibility_devices,
+                    'sim': self._sim,
                 }
         except Exception as e:
             self._pool = {}
@@ -126,7 +126,9 @@ class Airalo:
         self._compatibility_devices = self._pool.get("compatibility_devices") or CompatibilityDevicesService(
             self._config, self._http, self._access_token
         )
-
+        self._sim = self._pool.get('sim') or SimService(
+            self._config, self._http, self._multi_http, self._access_token
+        )
 
     # =====================================================
     # OAuth Methods
@@ -505,3 +507,55 @@ class Airalo:
             Response data as dictionary or None
         """
         return self._compatibility_devices.get_compatible_devices()
+
+    # =====================================================
+    # SIM Methods
+    # =====================================================
+
+    def sim_usage(self, iccid: str) -> Optional[Dict]:
+        """
+        Get SIM usage information.
+
+        Args:
+            iccid: ICCID of the SIM
+
+        Returns:
+            SIM usage data or None
+        """
+        return self._sim.get_usage(iccid)
+
+    def sim_usage_bulk(self, iccids: List[str]) -> Optional[Dict]:
+        """
+        Get usage information for multiple SIMs.
+
+        Args:
+            iccids: List of ICCIDs
+
+        Returns:
+            Dict mapping ICCIDs to usage data
+        """
+        return self._sim.get_usage_bulk(iccids)
+
+    def get_sim_topups(self, iccid: str) -> Optional[Dict]:
+        """
+        Get SIM topup history.
+
+        Args:
+            iccid: ICCID of the SIM
+
+        Returns:
+            Topup history or None
+        """
+        return self._sim.get_topups(iccid)
+
+    def get_sim_package_history(self, iccid: str) -> Optional[Dict]:
+        """
+        Get SIM package history.
+
+        Args:
+            iccid: ICCID of the SIM
+
+        Returns:
+            Package history or None
+        """
+        return self._sim.get_package_history(iccid)

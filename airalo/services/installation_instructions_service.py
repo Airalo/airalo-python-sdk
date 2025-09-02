@@ -1,6 +1,7 @@
 import json
 import hashlib
 
+from typing import Optional, Dict, Any
 from ..config import Config
 from ..constants.api_constants import ApiConstants
 from ..constants.sdk_constants import SdkConstants
@@ -18,7 +19,7 @@ class InstallationInstructionsService:
         self.access_token = access_token
         self.base_url = self.config.get_url()
 
-    def get_instructions(self, params=None):
+    def get_instructions(self, params=None) -> Optional[Dict[str, Any]]:
         if params is None:
             params = {}
 

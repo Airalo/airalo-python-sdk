@@ -35,7 +35,7 @@ class ApiConstants:
 
     # Instructions and compatibility
     INSTRUCTIONS_SLUG = "instructions"
-    COMPATIBILITY_SLUG = "compatible-devices"
+    COMPATIBILITY_SLUG = "compatible-devices-lite"
 
     # Finance endpoints
     EXCHANGE_RATES_SLUG = "finance/exchange-rates"

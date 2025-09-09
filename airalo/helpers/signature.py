@@ -40,6 +40,8 @@ class Signature:
         if not prepared_payload:
             return None
 
+        prepared_payload = prepared_payload.replace('/', '\\/')
+
         return self._sign_data(prepared_payload)
 
     def check_signature(self, hash_value: Optional[str], payload: Any) -> bool:

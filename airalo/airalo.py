@@ -19,6 +19,7 @@ from .resources.multi_http_resource import MultiHttpResource
 from .services.future_order_service import FutureOrderService
 from .services.compatibility_devices_service import CompatibilityDevicesService
 from .services.installation_instructions_service import InstallationInstructionsService
+from .services.voucher_service import VoucherService
 
 class Airalo:
     """
@@ -57,6 +58,7 @@ class Airalo:
                     'future_order': self._future_order,
                     'compatibility_devices': self._compatibility_devices,
                     'sim': self._sim,
+                    'voucher': self._voucher,
                 }
         except Exception as e:
             self._pool = {}
@@ -128,6 +130,9 @@ class Airalo:
         )
         self._sim = self._pool.get('sim') or SimService(
             self._config, self._http, self._multi_http, self._access_token
+        )
+        self._voucher = self._pool.get("voucher") or VoucherService(
+            self._config, self._http, self._signature, self._access_token
         )
 
     # =====================================================
@@ -559,3 +564,31 @@ class Airalo:
             Package history or None
         """
         return self._sim.get_package_history(iccid)
+
+    # =====================================================
+    # Voucher Methods
+    # =====================================================
+
+    def create_voucher(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Create a regular voucher.
+
+        Args:
+            payload: Dictionary with voucher parameters
+
+        Returns:
+            Response data or None
+        """
+        return self._voucher.create_voucher(payload)
+
+    def create_esim_voucher(self, payload: Dict[str, Any]) -> Optional[Dict]:
+        """
+        Create an eSIM voucher.
+
+        Args:
+            payload: Dictionary with eSIM voucher parameters
+
+        Returns:
+            Response data or None
+        """
+        return self._voucher.create_esim_voucher(payload)

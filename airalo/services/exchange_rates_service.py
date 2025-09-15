@@ -36,7 +36,7 @@ class ExchangeRatesService:
 
         result = Cached.get(fetch_data, self.get_key(url, params), 300)
 
-        return result if result.get("data") else None
+        return result if result and result.get("data") else None
 
     def validate_exchange_rates_request(self, params: dict) -> None:
         if 'date' in params and params['date']:
@@ -51,14 +51,14 @@ class ExchangeRatesService:
     def build_url(self, params: dict) -> str:
         query_params = {}
 
-        if 'date' in params:
+        if 'date' in params and params['date']:
             query_params['date'] = params['date']
-        if 'to' in params:
+        if 'to' in params and params['to']:
             query_params['to'] = params['to']
 
         return f"{self.base_url}{ApiConstants.EXCHANGE_RATES_SLUG}?{urlencode(query_params)}"
 
     def get_key(self, url: str, params: dict) -> str:
         headers = self.config.get_http_headers()
-        raw_key = f"{url}{json.dumps(params)}{json.dumps(headers)}{self.access_token}"
+        raw_key = f"{url}{json.dumps(params, sort_keys=True)}{json.dumps(headers)}{self.access_token}"
         return hashlib.md5(raw_key.encode()).hexdigest()

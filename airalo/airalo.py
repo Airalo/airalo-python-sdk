@@ -135,6 +135,7 @@ class Airalo:
         )
         self._exchange_rates = self._pool.get("exchange_rates") or ExchangeRatesService(
             self._config, self._http, self._access_token
+        )
         self._voucher = self._pool.get("voucher") or VoucherService(
             self._config, self._http, self._signature, self._access_token
         )

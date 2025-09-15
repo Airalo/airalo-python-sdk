@@ -79,6 +79,8 @@ class Signature:
         if isinstance(payload, str):
             # If it's already a string, ensure it's valid JSON by parsing and re-encoding
             try:
+                payload = self._escape_forward_slashes(payload)
+
                 # Remove whitespaces by parsing and re-encoding
                 parsed = json.loads(payload)
                 return json.dumps(parsed, separators=(',', ':'), ensure_ascii=False)
@@ -88,10 +90,14 @@ class Signature:
 
         # Convert to JSON string
         try:
-            return json.dumps(payload, separators=(',', ':'), ensure_ascii=False)
+            json_encoded =  json.dumps(payload, separators=(',', ':'), ensure_ascii=False)
+            return self._escape_forward_slashes(json_encoded)
         except (TypeError, ValueError):
             # If not JSON-serializable, convert to string
             return str(payload)
+
+    def _escape_forward_slashes(self, payload: str) -> str:
+        return payload.replace('/', '\\/')
 
     def _sign_data(self, payload: str, algo: str = 'sha512') -> str:
         """

@@ -1,6 +1,7 @@
 import json
 from typing import Optional, Dict, Any
 from ..constants.api_constants import ApiConstants
+from airalo.exceptions import AiraloException
 
 class CompatibilityDevicesService:
     def __init__(self, config, curl, access_token: str):

@@ -379,6 +379,7 @@ class OrderService:
         """
         return {
             'Authorization': f'Bearer {self._access_token}',
+            'Content-Type': 'application/json',
             'airalo-signature': self._signature.get_signature(payload)
         }
 

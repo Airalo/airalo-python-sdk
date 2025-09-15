@@ -52,7 +52,6 @@ class HttpResource:
             'User-Agent': f'Airalo-Python-SDK/{SdkConstants.VERSION}',
             'airalo-python-sdk': f'{SdkConstants.VERSION}',
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
         }
 
         # Initialize headers

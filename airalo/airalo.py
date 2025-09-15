@@ -19,6 +19,7 @@ from .resources.multi_http_resource import MultiHttpResource
 from .services.future_order_service import FutureOrderService
 from .services.compatibility_devices_service import CompatibilityDevicesService
 from .services.installation_instructions_service import InstallationInstructionsService
+from .services.exchange_rates_service import ExchangeRatesService
 from .services.voucher_service import VoucherService
 
 class Airalo:
@@ -58,6 +59,7 @@ class Airalo:
                     'future_order': self._future_order,
                     'compatibility_devices': self._compatibility_devices,
                     'sim': self._sim,
+                    'exchange_rates': self._exchange_rates,
                     'voucher': self._voucher,
                 }
         except Exception as e:
@@ -130,6 +132,9 @@ class Airalo:
         )
         self._sim = self._pool.get('sim') or SimService(
             self._config, self._http, self._multi_http, self._access_token
+        )
+        self._exchange_rates = self._pool.get("exchange_rates") or ExchangeRatesService(
+            self._config, self._http, self._access_token
         )
         self._voucher = self._pool.get("voucher") or VoucherService(
             self._config, self._http, self._signature, self._access_token
@@ -566,6 +571,21 @@ class Airalo:
         return self._sim.get_package_history(iccid)
 
     # =====================================================
+    # Exchange Rates Methods
+    # =====================================================
+
+    def get_exchange_rates(self, params: Optional[Dict[str, str]] = None) -> Optional[Dict]:
+        """
+        Get exchange rates for given parameters.
+
+        Args:
+            params: Optional dict with keys like 'date' and 'to'
+
+        Returns:
+            Exchange rate data or None
+        """
+        return self._exchange_rates.exchange_rates(params or {})
+
     # Voucher Methods
     # =====================================================
 
@@ -592,3 +612,4 @@ class Airalo:
             Response data or None
         """
         return self._voucher.create_esim_voucher(payload)
+

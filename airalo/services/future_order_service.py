@@ -55,6 +55,7 @@ class FutureOrderService:
     def _get_headers(self, payload: dict) -> dict:
         return {
             'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json',
             'airalo-signature': self.signature.get_signature(payload)
         }
 

@@ -49,15 +49,17 @@ class HttpResource:
         # Request headers
         self._request_headers: Dict[str, str] = {}
         self._default_headers: Dict[str, str] = {
-            'User-Agent': f'Airalo-Python-SDK/{SdkConstants.VERSION}',
-            'airalo-python-sdk': f'{SdkConstants.VERSION}',
-            'Accept': 'application/json',
+            "User-Agent": f"Airalo-Python-SDK/{SdkConstants.VERSION}",
+            "airalo-python-sdk": f"{SdkConstants.VERSION}",
+            "Accept": "application/json",
         }
 
         # Initialize headers
         self._init_headers()
 
-    def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> Union[str, urllib.request.Request]:
+    def get(
+        self, url: str, params: Optional[Dict[str, Any]] = None
+    ) -> Union[str, urllib.request.Request]:
         """
         Perform GET request.
 
@@ -73,9 +75,11 @@ class HttpResource:
             query_string = self._build_query_string(params)
             url = f"{url.rstrip('?')}?{query_string}"
 
-        return self._request(url, method='GET')
+        return self._request(url, method="GET")
 
-    def post(self, url: str, params: Optional[Union[Dict[str, Any], str]] = None) -> Union[str, urllib.request.Request]:
+    def post(
+        self, url: str, params: Optional[Union[Dict[str, Any], str]] = None
+    ) -> Union[str, urllib.request.Request]:
         """
         Perform POST request.
 
@@ -91,17 +95,22 @@ class HttpResource:
         if params:
             if isinstance(params, dict):
                 # Check if we should send as JSON or form data
-                if 'Content-Type' in self._request_headers and 'json' in self._request_headers['Content-Type']:
-                    data = json.dumps(params).encode('utf-8')
+                if (
+                    "Content-Type" in self._request_headers
+                    and "json" in self._request_headers["Content-Type"]
+                ):
+                    data = json.dumps(params).encode("utf-8")
                 else:
-                    data = urlencode(params).encode('utf-8')
+                    data = urlencode(params).encode("utf-8")
             else:
                 # Assume it's already a string (could be JSON or form-encoded)
-                data = params.encode('utf-8') if isinstance(params, str) else params
+                data = params.encode("utf-8") if isinstance(params, str) else params
 
-        return self._request(url, data=data, method='POST')
+        return self._request(url, data=data, method="POST")
 
-    def head(self, url: str, params: Optional[Dict[str, Any]] = None) -> Union[str, urllib.request.Request]:
+    def head(
+        self, url: str, params: Optional[Dict[str, Any]] = None
+    ) -> Union[str, urllib.request.Request]:
         """
         Perform HEAD request.
 
@@ -116,9 +125,9 @@ class HttpResource:
             query_string = self._build_query_string(params)
             url = f"{url.rstrip('?')}?{query_string}"
 
-        return self._request(url, method='HEAD')
+        return self._request(url, method="HEAD")
 
-    def set_headers(self, headers: Union[Dict[str, str], List[str]]) -> 'HttpResource':
+    def set_headers(self, headers: Union[Dict[str, str], List[str]]) -> "HttpResource":
         """
         Set additional request headers.
 
@@ -131,8 +140,8 @@ class HttpResource:
         if isinstance(headers, list):
             # Parse list of header strings
             for header in headers:
-                if ':' in header:
-                    key, value = header.split(':', 1)
+                if ":" in header:
+                    key, value = header.split(":", 1)
                     self._request_headers[key.strip()] = value.strip()
         else:
             # Merge dictionary
@@ -140,7 +149,7 @@ class HttpResource:
 
         return self
 
-    def set_timeout(self, timeout: int = 30) -> 'HttpResource':
+    def set_timeout(self, timeout: int = 30) -> "HttpResource":
         """
         Set request timeout.
 
@@ -153,7 +162,7 @@ class HttpResource:
         self._timeout = timeout
         return self
 
-    def ignore_ssl(self) -> 'HttpResource':
+    def ignore_ssl(self) -> "HttpResource":
         """
         Ignore SSL certificate verification.
 
@@ -163,7 +172,7 @@ class HttpResource:
         self._ignore_ssl = True
         return self
 
-    def use_rfc(self, rfc: int) -> 'HttpResource':
+    def use_rfc(self, rfc: int) -> "HttpResource":
         """
         Set RFC standard for URL encoding.
 
@@ -176,7 +185,9 @@ class HttpResource:
         self._rfc = rfc
         return self
 
-    def set_basic_authentication(self, username: str, password: str = '') -> 'HttpResource':
+    def set_basic_authentication(
+        self, username: str, password: str = ""
+    ) -> "HttpResource":
         """
         Set HTTP basic authentication.
 
@@ -188,11 +199,16 @@ class HttpResource:
             Self for method chaining
         """
         import base64
-        credentials = base64.b64encode(f"{username}:{password}".encode()).decode('ascii')
-        self._request_headers['Authorization'] = f'Basic {credentials}'
+
+        credentials = base64.b64encode(f"{username}:{password}".encode()).decode(
+            "ascii"
+        )
+        self._request_headers["Authorization"] = f"Basic {credentials}"
         return self
 
-    def _request(self, url: str, data: Optional[bytes] = None, method: str = 'GET') -> Union[str, urllib.request.Request]:
+    def _request(
+        self, url: str, data: Optional[bytes] = None, method: str = "GET"
+    ) -> Union[str, urllib.request.Request]:
         """
         Execute HTTP request.
 
@@ -228,13 +244,11 @@ class HttpResource:
         try:
             # Execute request
             response = urllib.request.urlopen(
-                request,
-                timeout=self._timeout,
-                context=context
+                request, timeout=self._timeout, context=context
             )
 
             # Read response
-            response_body = response.read().decode('utf-8')
+            response_body = response.read().decode("utf-8")
 
             # Store response details
             self.code = response.getcode()
@@ -254,7 +268,7 @@ class HttpResource:
 
             # Try to read error response
             try:
-                error_body = e.read().decode('utf-8')
+                error_body = e.read().decode("utf-8")
                 self._reset()
                 return error_body
             except:
@@ -279,8 +293,8 @@ class HttpResource:
         config_headers = self._config.get_http_headers()
         if isinstance(config_headers, list):
             for header in config_headers:
-                if ':' in header:
-                    key, value = header.split(':', 1)
+                if ":" in header:
+                    key, value = header.split(":", 1)
                     self._request_headers[key.strip()] = value.strip()
         elif isinstance(config_headers, dict):
             self._request_headers.update(config_headers)

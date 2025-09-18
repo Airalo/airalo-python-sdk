@@ -36,24 +36,29 @@ class AiraloException(Exception):
 
 class ConfigurationError(AiraloException):
     """Exception raised for configuration-related errors."""
+
     pass
 
 
 class AuthenticationError(AiraloException):
     """Exception raised for authentication failures."""
+
     pass
 
 
 class ValidationError(AiraloException):
     """Exception raised for validation errors."""
+
     pass
 
 
 class APIError(AiraloException):
     """Exception raised for API-related errors."""
+
     pass
 
 
 class NetworkError(AiraloException):
     """Exception raised for network-related errors."""
+
     pass

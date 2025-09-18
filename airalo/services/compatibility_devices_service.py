@@ -3,6 +3,7 @@ from typing import Optional, Dict, Any
 from ..constants.api_constants import ApiConstants
 from airalo.exceptions import AiraloException
 
+
 class CompatibilityDevicesService:
     def __init__(self, config, curl, access_token: str):
         if not access_token:
@@ -18,7 +19,7 @@ class CompatibilityDevicesService:
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.access_token}"
+            "Authorization": f"Bearer {self.access_token}",
         }
 
         response = self.curl.set_headers(headers).get(url)

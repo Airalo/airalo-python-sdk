@@ -26,9 +26,14 @@ class OrderService:
     Handles single orders, bulk orders, async orders, and email SIM sharing.
     """
 
-    def __init__(self, config: Config, http_resource: HttpResource,
-                 multi_http_resource: MultiHttpResource, signature: Signature,
-                 access_token: str):
+    def __init__(
+        self,
+        config: Config,
+        http_resource: HttpResource,
+        multi_http_resource: MultiHttpResource,
+        signature: Signature,
+        access_token: str,
+    ):
         """
         Initialize order service.
 
@@ -43,7 +48,7 @@ class OrderService:
             AiraloException: If access token is invalid
         """
         if not access_token:
-            raise AiraloException('Invalid access token, please check your credentials')
+            raise AiraloException("Invalid access token, please check your credentials")
 
         self._config = config
         self._http = http_resource
@@ -73,8 +78,8 @@ class OrderService:
         self._validate_order(payload)
 
         # Set default type if not provided
-        if 'type' not in payload:
-            payload['type'] = 'sim'
+        if "type" not in payload:
+            payload["type"] = "sim"
 
         # Set headers with signature
         headers = self._get_headers(payload)
@@ -87,17 +92,18 @@ class OrderService:
         # Check response
         if self._http.code != 200:
             raise APIError(
-                f'Order creation failed, status code: {self._http.code}, response: {response}'
+                f"Order creation failed, status code: {self._http.code}, response: {response}"
             )
 
         # Parse and return response
         try:
             return json.loads(response)
         except json.JSONDecodeError:
-            raise APIError('Failed to parse order response')
+            raise APIError("Failed to parse order response")
 
-    def create_order_with_email_sim_share(self, payload: Dict[str, Any],
-                                          esim_cloud: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def create_order_with_email_sim_share(
+        self, payload: Dict[str, Any], esim_cloud: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """
         Create an order with email SIM sharing.
 
@@ -115,15 +121,15 @@ class OrderService:
         self._validate_cloud_sim_share(esim_cloud)
 
         # Add email sharing to payload
-        payload['to_email'] = esim_cloud['to_email']
-        payload['sharing_option'] = esim_cloud['sharing_option']
+        payload["to_email"] = esim_cloud["to_email"]
+        payload["sharing_option"] = esim_cloud["sharing_option"]
 
-        if esim_cloud.get('copy_address'):
-            payload['copy_address'] = esim_cloud['copy_address']
+        if esim_cloud.get("copy_address"):
+            payload["copy_address"] = esim_cloud["copy_address"]
 
         # Set default type
-        if 'type' not in payload:
-            payload['type'] = 'sim'
+        if "type" not in payload:
+            payload["type"] = "sim"
 
         # Make request
         headers = self._get_headers(payload)
@@ -134,13 +140,13 @@ class OrderService:
 
         if self._http.code != 200:
             raise APIError(
-                f'Order creation failed, status code: {self._http.code}, response: {response}'
+                f"Order creation failed, status code: {self._http.code}, response: {response}"
             )
 
         try:
             return json.loads(response)
         except json.JSONDecodeError:
-            raise APIError('Failed to parse order response')
+            raise APIError("Failed to parse order response")
 
     def create_order_async(self, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
@@ -159,8 +165,8 @@ class OrderService:
         self._validate_order(payload)
 
         # Set default type
-        if 'type' not in payload:
-            payload['type'] = 'sim'
+        if "type" not in payload:
+            payload["type"] = "sim"
 
         # Make request
         headers = self._get_headers(payload)
@@ -172,16 +178,19 @@ class OrderService:
         # Async orders return 202 Accepted
         if self._http.code != 202:
             raise APIError(
-                f'Async order creation failed, status code: {self._http.code}, response: {response}'
+                f"Async order creation failed, status code: {self._http.code}, response: {response}"
             )
 
         try:
             return json.loads(response)
         except json.JSONDecodeError:
-            raise APIError('Failed to parse order response')
+            raise APIError("Failed to parse order response")
 
-    def create_order_bulk(self, packages: Union[Dict[str, int], List[Dict]],
-                         description: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def create_order_bulk(
+        self,
+        packages: Union[Dict[str, int], List[Dict]],
+        description: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
         """
         Create multiple orders in bulk.
 
@@ -198,7 +207,7 @@ class OrderService:
         if isinstance(packages, list):
             packages_dict = {}
             for item in packages:
-                packages_dict[item['package_id']] = item['quantity']
+                packages_dict[item["package_id"]] = item["quantity"]
             packages = packages_dict
 
         self._validate_bulk_order(packages)
@@ -209,10 +218,10 @@ class OrderService:
         # Prepare concurrent requests
         for package_id, quantity in packages.items():
             payload = {
-                'package_id': package_id,
-                'quantity': quantity,
-                'type': 'sim',
-                'description': description or 'Bulk order placed via Airalo Python SDK'
+                "package_id": package_id,
+                "quantity": quantity,
+                "type": "sim",
+                "description": description or "Bulk order placed via Airalo Python SDK",
             }
 
             self._validate_order(payload)
@@ -220,8 +229,7 @@ class OrderService:
             # Add request to multi-http queue
             headers = self._get_headers(payload)
             self._multi_http.tag(package_id).set_headers(headers).post(
-                self._base_url + ApiConstants.ORDERS_SLUG,
-                payload
+                self._base_url + ApiConstants.ORDERS_SLUG, payload
             )
 
         # Execute all requests
@@ -236,13 +244,19 @@ class OrderService:
             try:
                 result[package_id] = json.loads(response)
             except json.JSONDecodeError:
-                result[package_id] = {'error': 'Failed to parse response', 'raw': response}
+                result[package_id] = {
+                    "error": "Failed to parse response",
+                    "raw": response,
+                }
 
         return result
 
-    def create_order_bulk_with_email_sim_share(self, packages: Union[Dict[str, int], List[Dict]],
-                                               esim_cloud: Dict[str, Any],
-                                               description: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def create_order_bulk_with_email_sim_share(
+        self,
+        packages: Union[Dict[str, int], List[Dict]],
+        esim_cloud: Dict[str, Any],
+        description: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
         """
         Create bulk orders with email SIM sharing.
 
@@ -258,7 +272,7 @@ class OrderService:
         if isinstance(packages, list):
             packages_dict = {}
             for item in packages:
-                packages_dict[item['package_id']] = item['quantity']
+                packages_dict[item["package_id"]] = item["quantity"]
             packages = packages_dict
 
         self._validate_bulk_order(packages)
@@ -270,24 +284,23 @@ class OrderService:
         # Prepare concurrent requests
         for package_id, quantity in packages.items():
             payload = {
-                'package_id': package_id,
-                'quantity': quantity,
-                'type': 'sim',
-                'description': description or 'Bulk order placed via Airalo Python SDK',
-                'to_email': esim_cloud['to_email'],
-                'sharing_option': esim_cloud['sharing_option']
+                "package_id": package_id,
+                "quantity": quantity,
+                "type": "sim",
+                "description": description or "Bulk order placed via Airalo Python SDK",
+                "to_email": esim_cloud["to_email"],
+                "sharing_option": esim_cloud["sharing_option"],
             }
 
-            if esim_cloud.get('copy_address'):
-                payload['copy_address'] = esim_cloud['copy_address']
+            if esim_cloud.get("copy_address"):
+                payload["copy_address"] = esim_cloud["copy_address"]
 
             self._validate_order(payload)
 
             # Add request to queue
             headers = self._get_headers(payload)
             self._multi_http.tag(package_id).set_headers(headers).post(
-                self._base_url + ApiConstants.ORDERS_SLUG,
-                payload
+                self._base_url + ApiConstants.ORDERS_SLUG, payload
             )
 
         # Execute all requests
@@ -302,13 +315,19 @@ class OrderService:
             try:
                 result[package_id] = json.loads(response)
             except json.JSONDecodeError:
-                result[package_id] = {'error': 'Failed to parse response', 'raw': response}
+                result[package_id] = {
+                    "error": "Failed to parse response",
+                    "raw": response,
+                }
 
         return result
 
-    def create_order_async_bulk(self, packages: Union[Dict[str, int], List[Dict]],
-                               webhook_url: Optional[str] = None,
-                               description: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def create_order_async_bulk(
+        self,
+        packages: Union[Dict[str, int], List[Dict]],
+        webhook_url: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
         """
         Create multiple asynchronous orders in bulk.
 
@@ -324,7 +343,7 @@ class OrderService:
         if isinstance(packages, list):
             packages_dict = {}
             for item in packages:
-                packages_dict[item['package_id']] = item['quantity']
+                packages_dict[item["package_id"]] = item["quantity"]
             packages = packages_dict
 
         self._validate_bulk_order(packages)
@@ -335,11 +354,12 @@ class OrderService:
         # Prepare concurrent requests
         for package_id, quantity in packages.items():
             payload = {
-                'package_id': package_id,
-                'quantity': quantity,
-                'type': 'sim',
-                'description': description or 'Bulk async order placed via Airalo Python SDK',
-                'webhook_url': webhook_url
+                "package_id": package_id,
+                "quantity": quantity,
+                "type": "sim",
+                "description": description
+                or "Bulk async order placed via Airalo Python SDK",
+                "webhook_url": webhook_url,
             }
 
             self._validate_order(payload)
@@ -347,8 +367,7 @@ class OrderService:
             # Add request to queue
             headers = self._get_headers(payload)
             self._multi_http.tag(package_id).set_headers(headers).post(
-                self._base_url + ApiConstants.ASYNC_ORDERS_SLUG,
-                payload
+                self._base_url + ApiConstants.ASYNC_ORDERS_SLUG, payload
             )
 
         # Execute all requests
@@ -363,7 +382,10 @@ class OrderService:
             try:
                 result[package_id] = json.loads(response)
             except json.JSONDecodeError:
-                result[package_id] = {'error': 'Failed to parse response', 'raw': response}
+                result[package_id] = {
+                    "error": "Failed to parse response",
+                    "raw": response,
+                }
 
         return result
 
@@ -378,9 +400,9 @@ class OrderService:
             Headers dictionary
         """
         return {
-            'Authorization': f'Bearer {self._access_token}',
-            'Content-Type': 'application/json',
-            'airalo-signature': self._signature.get_signature(payload)
+            "Authorization": f"Bearer {self._access_token}",
+            "Content-Type": "application/json",
+            "airalo-signature": self._signature.get_signature(payload),
         }
 
     def _validate_order(self, payload: Dict[str, Any]) -> None:
@@ -393,17 +415,21 @@ class OrderService:
         Raises:
             ValidationError: If validation fails
         """
-        if not payload.get('package_id'):
-            raise ValidationError(f'The package_id is required, payload: {json.dumps(payload)}')
+        if not payload.get("package_id"):
+            raise ValidationError(
+                f"The package_id is required, payload: {json.dumps(payload)}"
+            )
 
-        quantity = payload.get('quantity', 0)
+        quantity = payload.get("quantity", 0)
         if quantity < 1:
-            raise ValidationError(f'The quantity must be at least 1, payload: {json.dumps(payload)}')
+            raise ValidationError(
+                f"The quantity must be at least 1, payload: {json.dumps(payload)}"
+            )
 
         if quantity > SdkConstants.ORDER_LIMIT:
             raise ValidationError(
-                f'The quantity may not be greater than {SdkConstants.ORDER_LIMIT}, '
-                f'payload: {json.dumps(payload)}'
+                f"The quantity may not be greater than {SdkConstants.ORDER_LIMIT}, "
+                f"payload: {json.dumps(payload)}"
             )
 
     def _validate_bulk_order(self, packages: Dict[str, int]) -> None:
@@ -418,7 +444,7 @@ class OrderService:
         """
         if len(packages) > SdkConstants.BULK_ORDER_LIMIT:
             raise ValidationError(
-                f'The packages count may not be greater than {SdkConstants.BULK_ORDER_LIMIT}'
+                f"The packages count may not be greater than {SdkConstants.BULK_ORDER_LIMIT}"
             )
 
     def _validate_cloud_sim_share(self, sim_cloud_share: Dict[str, Any]) -> None:
@@ -432,4 +458,6 @@ class OrderService:
             ValidationError: If validation fails
         """
         # Use CloudSimShareValidator with required fields for order service
-        CloudSimShareValidator.validate(sim_cloud_share, required_fields=['to_email', 'sharing_option'])
+        CloudSimShareValidator.validate(
+            sim_cloud_share, required_fields=["to_email", "sharing_option"]
+        )

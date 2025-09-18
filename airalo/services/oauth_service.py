@@ -27,10 +27,12 @@ class OAuthService:
     Handles access token generation, caching, and refresh with automatic retry logic.
     """
 
-    CACHE_NAME = 'airalo_access_token'
+    CACHE_NAME = "airalo_access_token"
     RETRY_LIMIT = SdkConstants.DEFAULT_RETRY_COUNT
 
-    def __init__(self, config: Config, http_resource: HttpResource, signature: Signature):
+    def __init__(
+        self, config: Config, http_resource: HttpResource, signature: Signature
+    ):
         """
         Initialize OAuth service.
 
@@ -46,7 +48,7 @@ class OAuthService:
         # Prepare OAuth payload
         self._payload = {
             **self._config.get_credentials(),
-            'grant_type': 'client_credentials'
+            "grant_type": "client_credentials",
         }
 
     def get_access_token(self) -> Optional[str]:
@@ -70,7 +72,7 @@ class OAuthService:
                 encrypted_token = Cached.get(
                     lambda: self._request_token(),
                     cache_name,
-                    ttl=SdkConstants.TOKEN_CACHE_TTL
+                    ttl=SdkConstants.TOKEN_CACHE_TTL,
                 )
 
                 # Decrypt and return token
@@ -108,8 +110,8 @@ class OAuthService:
 
         # Set headers
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'airalo-signature': signature_hash
+            "Content-Type": "application/x-www-form-urlencoded",
+            "airalo-signature": signature_hash,
         }
 
         # Make request
@@ -127,16 +129,18 @@ class OAuthService:
         try:
             response_data = json.loads(response)
         except json.JSONDecodeError as e:
-            raise AuthenticationError(f"Failed to parse access token response: {str(e)}")
+            raise AuthenticationError(
+                f"Failed to parse access token response: {str(e)}"
+            )
 
         # Extract token
-        if not isinstance(response_data, dict) or 'data' not in response_data:
+        if not isinstance(response_data, dict) or "data" not in response_data:
             raise AuthenticationError("Invalid response format: missing 'data' field")
 
-        if 'access_token' not in response_data['data']:
+        if "access_token" not in response_data["data"]:
             raise AuthenticationError("Access token not found in response")
 
-        access_token = response_data['data']['access_token']
+        access_token = response_data["data"]["access_token"]
 
         # Encrypt token for caching
         return Crypt.encrypt(access_token, self._get_encryption_key())

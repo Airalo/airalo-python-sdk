@@ -23,8 +23,13 @@ class SimService:
     Handles SIM usage tracking, bulk usage queries, topup history, and package history.
     """
 
-    def __init__(self, config: Config, http_resource: HttpResource,
-                 multi_http_resource: MultiHttpResource, access_token: str):
+    def __init__(
+        self,
+        config: Config,
+        http_resource: HttpResource,
+        multi_http_resource: MultiHttpResource,
+        access_token: str,
+    ):
         """
         Initialize SIM service.
 
@@ -38,7 +43,7 @@ class SimService:
             AiraloException: If access token is invalid
         """
         if not access_token:
-            raise AiraloException('Invalid access token, please check your credentials')
+            raise AiraloException("Invalid access token, please check your credentials")
 
         self._config = config
         self._http = http_resource
@@ -67,13 +72,11 @@ class SimService:
 
         # Try to get from cache (5 minutes TTL for usage data)
         result = Cached.get(
-            lambda: self._fetch_sim_data(url),
-            cache_key,
-            ttl=300  # 5 minutes
+            lambda: self._fetch_sim_data(url), cache_key, ttl=300  # 5 minutes
         )
 
         # Return None if no data
-        if not result or not result.get('data'):
+        if not result or not result.get("data"):
             return None
 
         return result
@@ -92,13 +95,11 @@ class SimService:
             return None
 
         # Generate cache key for bulk request
-        cache_key = self._get_cache_key(''.join(iccids), {})
+        cache_key = self._get_cache_key("".join(iccids), {})
 
         # Try to get from cache
         result = Cached.get(
-            lambda: self._fetch_bulk_sim_usage(iccids),
-            cache_key,
-            ttl=300  # 5 minutes
+            lambda: self._fetch_bulk_sim_usage(iccids), cache_key, ttl=300  # 5 minutes
         )
 
         return result
@@ -115,12 +116,14 @@ class SimService:
         """
         # Queue requests for each ICCID
         for iccid in iccids:
-            url = self._build_url({'iccid': iccid}, ApiConstants.SIMS_USAGE)
+            url = self._build_url({"iccid": iccid}, ApiConstants.SIMS_USAGE)
 
-            self._multi_http.tag(iccid).set_headers({
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {self._access_token}'
-            }).get(url)
+            self._multi_http.tag(iccid).set_headers(
+                {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._access_token}",
+                }
+            ).get(url)
 
         # Execute all requests
         responses = self._multi_http.exec()
@@ -134,7 +137,7 @@ class SimService:
             try:
                 result[iccid] = json.loads(response)
             except json.JSONDecodeError:
-                result[iccid] = {'error': 'Failed to parse response', 'raw': response}
+                result[iccid] = {"error": "Failed to parse response", "raw": response}
 
         return result
 
@@ -159,13 +162,11 @@ class SimService:
 
         # Try to get from cache (5 minutes TTL)
         result = Cached.get(
-            lambda: self._fetch_sim_data(url),
-            cache_key,
-            ttl=300  # 5 minutes
+            lambda: self._fetch_sim_data(url), cache_key, ttl=300  # 5 minutes
         )
 
         # Return None if no data
-        if not result or not result.get('data'):
+        if not result or not result.get("data"):
             return None
 
         return result
@@ -191,13 +192,11 @@ class SimService:
 
         # Try to get from cache (15 minutes TTL for package history)
         result = Cached.get(
-            lambda: self._fetch_sim_data(url),
-            cache_key,
-            ttl=900  # 15 minutes
+            lambda: self._fetch_sim_data(url), cache_key, ttl=900  # 15 minutes
         )
 
         # Return None if no data
-        if not result or not result.get('data'):
+        if not result or not result.get("data"):
             return None
 
         return result
@@ -213,21 +212,23 @@ class SimService:
             SIM data
         """
         # Make request
-        self._http.set_headers({
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self._access_token}'
-        })
+        self._http.set_headers(
+            {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self._access_token}",
+            }
+        )
 
         response = self._http.get(url)
 
         if not response:
-            return {'data': None}
+            return {"data": None}
 
         # Parse response
         try:
             return json.loads(response)
         except json.JSONDecodeError:
-            return {'data': None}
+            return {"data": None}
 
     def _build_url(self, params: Dict[str, Any], endpoint: Optional[str] = None) -> str:
         """
@@ -243,10 +244,10 @@ class SimService:
         Raises:
             AiraloException: If ICCID is invalid
         """
-        if 'iccid' not in params or not self._is_valid_iccid(params['iccid']):
+        if "iccid" not in params or not self._is_valid_iccid(params["iccid"]):
             raise AiraloException(f"Invalid or missing ICCID: {params.get('iccid')}")
 
-        iccid = str(params['iccid'])
+        iccid = str(params["iccid"])
 
         # Build URL
         url = f"{self._base_url}{ApiConstants.SIMS_SLUG}/{iccid}"
@@ -273,10 +274,7 @@ class SimService:
         iccid_str = str(iccid)
 
         # ICCID should be 18-22 digits
-        return (
-            iccid_str.isdigit() and
-            18 <= len(iccid_str) <= 22
-        )
+        return iccid_str.isdigit() and 18 <= len(iccid_str) <= 22
 
     def _get_cache_key(self, url: str, params: Dict[str, Any]) -> str:
         """
@@ -290,11 +288,12 @@ class SimService:
             Cache key
         """
         import hashlib
+
         key_data = {
-            'url': url,
-            'params': params,
-            'headers': self._config.get_http_headers(),
-            'token': self._access_token[:20] if self._access_token else ''
+            "url": url,
+            "params": params,
+            "headers": self._config.get_http_headers(),
+            "token": self._access_token[:20] if self._access_token else "",
         }
         key_string = json.dumps(key_data, sort_keys=True)
         return f"sim_{hashlib.md5(key_string.encode()).hexdigest()}"
@@ -311,7 +310,7 @@ class SimService:
         Returns:
             SIM usage data or None
         """
-        return self.sim_usage({'iccid': iccid})
+        return self.sim_usage({"iccid": iccid})
 
     def get_usage_bulk(self, iccids: List[str]) -> Optional[Dict[str, Any]]:
         """
@@ -335,7 +334,7 @@ class SimService:
         Returns:
             Topup history or None
         """
-        return self.sim_topups({'iccid': iccid})
+        return self.sim_topups({"iccid": iccid})
 
     def get_package_history(self, iccid: str) -> Optional[Dict[str, Any]]:
         """
@@ -347,4 +346,4 @@ class SimService:
         Returns:
             Package history or None
         """
-        return self.sim_package_history({'iccid': iccid})
+        return self.sim_package_history({"iccid": iccid})

@@ -8,7 +8,7 @@ from .airalo_exception import (
     AuthenticationError,
     ValidationError,
     APIError,
-    NetworkError
+    NetworkError,
 )
 
 __all__ = [

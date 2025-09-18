@@ -22,13 +22,8 @@ class Config:
     """
 
     MANDATORY_CONFIG_KEYS = [
-        'client_id',
-        'client_secret',
-    ]
-
-    ENVIRONMENTS = [
-        'sandbox',
-        'production',
+        "client_id",
+        "client_secret",
     ]
 
     def __init__(self, data: Union[Dict[str, Any], str, object]):
@@ -54,7 +49,7 @@ class Config:
                 raise ConfigurationError(f"Invalid JSON config data: {e}")
         elif isinstance(data, dict):
             self._data = data.copy()
-        elif hasattr(data, '__dict__'):
+        elif hasattr(data, "__dict__"):
             # Convert object to dictionary
             self._data = vars(data).copy()
         else:
@@ -99,8 +94,8 @@ class Config:
             Credentials as dictionary or URL-encoded string
         """
         credentials = {
-            'client_id': self._data['client_id'],
-            'client_secret': self._data['client_secret'],
+            "client_id": self._data["client_id"],
+            "client_secret": self._data["client_secret"],
         }
 
         if as_string:
@@ -111,11 +106,8 @@ class Config:
     def get_environment(self) -> str:
         """
         Get current environment.
-
-        Returns:
-            Environment name ('sandbox' or 'production')
         """
-        return self._data.get('env', 'production')
+        return self._data.get("env", "production")
 
     def get_url(self) -> str:
         """
@@ -124,8 +116,6 @@ class Config:
         Returns:
             Base API URL
         """
-        if self.get_environment() == 'sandbox':
-            return ApiConstants.SANDBOX_URL
         return ApiConstants.PRODUCTION_URL
 
     def get_http_headers(self) -> List[str]:
@@ -135,7 +125,7 @@ class Config:
         Returns:
             List of HTTP header strings
         """
-        return self._data.get('http_headers', [])
+        return self._data.get("http_headers", [])
 
     def _validate(self) -> None:
         """
@@ -152,12 +142,5 @@ class Config:
                 )
 
         # Set default environment if not provided
-        if 'env' not in self._data:
-            self._data['env'] = 'production'
-
-        # Validate environment
-        if self._data['env'] not in self.ENVIRONMENTS:
-            raise ConfigurationError(
-                f"Invalid environment provided: `{self._data['env']}`, "
-                f"allowed: {', '.join(self.ENVIRONMENTS)}"
-            )
+        if "env" not in self._data:
+            self._data["env"] = "production"

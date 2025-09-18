@@ -16,11 +16,13 @@ class CloudSimShareValidator:
     Validator for SIM cloud sharing payloads.
     """
 
-    _email_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-    _allowed_sharing_options = {'link', 'pdf'}
+    _email_regex = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+    _allowed_sharing_options = {"link", "pdf"}
 
     @staticmethod
-    def validate(sim_cloud_share: Dict[str, Any], required_fields: List[str] = None) -> bool:
+    def validate(
+        sim_cloud_share: Dict[str, Any], required_fields: List[str] = None
+    ) -> bool:
         """
         Validate the SIM cloud sharing payload.
 
@@ -39,22 +41,22 @@ class CloudSimShareValidator:
         CloudSimShareValidator._check_required_fields(sim_cloud_share, required_fields)
 
         # Validate 'to_email'
-        to_email = sim_cloud_share.get('to_email')
+        to_email = sim_cloud_share.get("to_email")
         if to_email and not CloudSimShareValidator._email_regex.match(to_email):
             raise AiraloException(
                 f"The to_email must be a valid email address, payload: {json.dumps(sim_cloud_share)}"
             )
 
         # Validate 'sharing_option'
-        for option in sim_cloud_share.get('sharing_option', []):
+        for option in sim_cloud_share.get("sharing_option", []):
             if option not in CloudSimShareValidator._allowed_sharing_options:
-                allowed = ' or '.join(CloudSimShareValidator._allowed_sharing_options)
+                allowed = " or ".join(CloudSimShareValidator._allowed_sharing_options)
                 raise AiraloException(
                     f"The sharing_option may be {allowed} or both, payload: {json.dumps(sim_cloud_share)}"
                 )
 
         # Validate 'copy_address' emails
-        for cc_email in sim_cloud_share.get('copy_address', []):
+        for cc_email in sim_cloud_share.get("copy_address", []):
             if not CloudSimShareValidator._email_regex.match(cc_email):
                 raise AiraloException(
                     f"The copy_address: {cc_email} must be a valid email address, payload: {json.dumps(sim_cloud_share)}"
@@ -63,7 +65,9 @@ class CloudSimShareValidator:
         return True
 
     @staticmethod
-    def _check_required_fields(sim_cloud_share: Dict[str, Any], required_fields: List[str]) -> bool:
+    def _check_required_fields(
+        sim_cloud_share: Dict[str, Any], required_fields: List[str]
+    ) -> bool:
         """
         Ensure required fields exist and are not empty.
 

@@ -12,7 +12,7 @@ from .exceptions.airalo_exception import (
     AuthenticationError,
     ValidationError,
     APIError,
-    NetworkError
+    NetworkError,
 )
 
 __version__ = "1.0.0"

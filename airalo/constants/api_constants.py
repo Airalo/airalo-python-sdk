@@ -8,8 +8,6 @@ This module contains all API endpoints and URLs used by the Airalo SDK.
 class ApiConstants:
     """API endpoints and URLs for Airalo SDK."""
 
-    # Base URLs
-    SANDBOX_URL = "https://sandbox-partners-api.airalo.com/v2/"
     PRODUCTION_URL = "https://partners-api.airalo.com/v2/"
 
     # Authentication

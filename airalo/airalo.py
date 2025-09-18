@@ -22,6 +22,7 @@ from .services.installation_instructions_service import InstallationInstructions
 from .services.exchange_rates_service import ExchangeRatesService
 from .services.voucher_service import VoucherService
 
+
 class Airalo:
     """
     Main Airalo SDK client.
@@ -49,18 +50,18 @@ class Airalo:
             # Store resources in pool for reuse
             if not self._pool:
                 self._pool = {
-                    'config': self._config,
-                    'curl': self._http,
-                    'multi_curl': self._multi_http,
-                    'signature': self._signature,
-                    'oauth': self._oauth,
-                    'installation_instructions': self._installation_instructions,
-                    'topup': self._topup,
-                    'future_order': self._future_order,
-                    'compatibility_devices': self._compatibility_devices,
-                    'sim': self._sim,
-                    'exchange_rates': self._exchange_rates,
-                    'voucher': self._voucher,
+                    "config": self._config,
+                    "curl": self._http,
+                    "multi_curl": self._multi_http,
+                    "signature": self._signature,
+                    "oauth": self._oauth,
+                    "installation_instructions": self._installation_instructions,
+                    "topup": self._topup,
+                    "future_order": self._future_order,
+                    "compatibility_devices": self._compatibility_devices,
+                    "sim": self._sim,
+                    "exchange_rates": self._exchange_rates,
+                    "voucher": self._voucher,
                 }
         except Exception as e:
             self._pool = {}
@@ -121,16 +122,18 @@ class Airalo:
         self._topup = self._pool.get("topup") or TopupService(
             self._config, self._http, self._signature, self._access_token
         )
-        self._installation_instructions = self._pool.get('installation_instructions') or InstallationInstructionsService(
+        self._installation_instructions = self._pool.get(
+            "installation_instructions"
+        ) or InstallationInstructionsService(
             self._config, self._http, self._access_token
         )
         self._future_order = self._pool.get("future_order") or FutureOrderService(
             self._config, self._http, self._signature, self._access_token
         )
-        self._compatibility_devices = self._pool.get("compatibility_devices") or CompatibilityDevicesService(
-            self._config, self._http, self._access_token
-        )
-        self._sim = self._pool.get('sim') or SimService(
+        self._compatibility_devices = self._pool.get(
+            "compatibility_devices"
+        ) or CompatibilityDevicesService(self._config, self._http, self._access_token)
+        self._sim = self._pool.get("sim") or SimService(
             self._config, self._http, self._multi_http, self._access_token
         )
         self._exchange_rates = self._pool.get("exchange_rates") or ExchangeRatesService(
@@ -460,12 +463,13 @@ class Airalo:
         """String representation of Airalo client."""
         return f"<Airalo(env='{self.get_environment()}')>"
 
-
     # =====================================================
     # Installation Instruction Methods
     # =====================================================
 
-    def get_installation_instructions(self, params: Optional[Dict[str, Any]] = None) -> Optional[Any]:
+    def get_installation_instructions(
+        self, params: Optional[Dict[str, Any]] = None
+    ) -> Optional[Any]:
         """
         Get installation instructions for a given ICCID and language.
 
@@ -574,7 +578,9 @@ class Airalo:
     # Exchange Rates Methods
     # =====================================================
 
-    def get_exchange_rates(self, params: Optional[Dict[str, str]] = None) -> Optional[Dict]:
+    def get_exchange_rates(
+        self, params: Optional[Dict[str, str]] = None
+    ) -> Optional[Dict]:
         """
         Get exchange rates for given parameters.
 
@@ -612,4 +618,3 @@ class Airalo:
             Response data or None
         """
         return self._voucher.create_esim_voucher(payload)
-

@@ -42,13 +42,13 @@ class MultiHttpResource:
 
         # Default headers
         self._default_headers: Dict[str, str] = {
-            'User-Agent': f'Airalo-Python-SDK/{SdkConstants.VERSION}',
-            'airalo-python-sdk': f'{SdkConstants.VERSION}',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            "User-Agent": f"Airalo-Python-SDK/{SdkConstants.VERSION}",
+            "airalo-python-sdk": f"{SdkConstants.VERSION}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
         }
 
-    def add(self, method_name: str, args: List[Any]) -> 'MultiHttpResource':
+    def add(self, method_name: str, args: List[Any]) -> "MultiHttpResource":
         """
         Add a request to the queue.
 
@@ -79,12 +79,12 @@ class MultiHttpResource:
 
         # Store request with metadata
         handler = {
-            'request': request,
-            'tag': self._tag if self._tag else len(self._handlers),
-            'options': self._options.copy(),
-            'ignore_ssl': self._ignore_ssl,
-            'timeout': self._timeout,
-            'headers': self._merge_headers()
+            "request": request,
+            "tag": self._tag if self._tag else len(self._handlers),
+            "options": self._options.copy(),
+            "ignore_ssl": self._ignore_ssl,
+            "timeout": self._timeout,
+            "headers": self._merge_headers(),
         }
 
         self._handlers.append(handler)
@@ -92,7 +92,9 @@ class MultiHttpResource:
 
         return self
 
-    def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> 'MultiHttpResource':
+    def get(
+        self, url: str, params: Optional[Dict[str, Any]] = None
+    ) -> "MultiHttpResource":
         """
         Add GET request to queue.
 
@@ -103,9 +105,11 @@ class MultiHttpResource:
         Returns:
             Self for method chaining
         """
-        return self.add('get', [url, params])
+        return self.add("get", [url, params])
 
-    def post(self, url: str, params: Optional[Union[Dict[str, Any], str]] = None) -> 'MultiHttpResource':
+    def post(
+        self, url: str, params: Optional[Union[Dict[str, Any], str]] = None
+    ) -> "MultiHttpResource":
         """
         Add POST request to queue.
 
@@ -116,9 +120,9 @@ class MultiHttpResource:
         Returns:
             Self for method chaining
         """
-        return self.add('post', [url, params])
+        return self.add("post", [url, params])
 
-    def tag(self, name: str = '') -> 'MultiHttpResource':
+    def tag(self, name: str = "") -> "MultiHttpResource":
         """
         Set tag for next request.
 
@@ -132,7 +136,9 @@ class MultiHttpResource:
             self._tag = name
         return self
 
-    def set_headers(self, headers: Union[Dict[str, str], List[str]]) -> 'MultiHttpResource':
+    def set_headers(
+        self, headers: Union[Dict[str, str], List[str]]
+    ) -> "MultiHttpResource":
         """
         Set headers for all requests.
 
@@ -145,15 +151,15 @@ class MultiHttpResource:
         if isinstance(headers, list):
             # Parse list of header strings
             for header in headers:
-                if ':' in header:
-                    key, value = header.split(':', 1)
+                if ":" in header:
+                    key, value = header.split(":", 1)
                     self._headers[key.strip()] = value.strip()
         else:
             self._headers.update(headers)
 
         return self
 
-    def set_timeout(self, timeout: int = 30) -> 'MultiHttpResource':
+    def set_timeout(self, timeout: int = 30) -> "MultiHttpResource":
         """
         Set timeout for all requests.
 
@@ -166,7 +172,7 @@ class MultiHttpResource:
         self._timeout = timeout
         return self
 
-    def ignore_ssl(self) -> 'MultiHttpResource':
+    def ignore_ssl(self) -> "MultiHttpResource":
         """
         Ignore SSL verification for all requests.
 
@@ -176,7 +182,7 @@ class MultiHttpResource:
         self._ignore_ssl = True
         return self
 
-    def setopt(self, options: Dict[str, Any]) -> 'MultiHttpResource':
+    def setopt(self, options: Dict[str, Any]) -> "MultiHttpResource":
         """
         Set additional options for requests.
 
@@ -202,12 +208,14 @@ class MultiHttpResource:
         responses = {}
 
         # Use ThreadPoolExecutor for concurrent execution
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self._max_workers) as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self._max_workers
+        ) as executor:
             # Submit all requests
             future_to_tag = {}
             for handler in self._handlers:
                 future = executor.submit(self._execute_request, handler)
-                future_to_tag[future] = handler['tag']
+                future_to_tag[future] = handler["tag"]
 
             # Collect results
             for future in concurrent.futures.as_completed(future_to_tag):
@@ -217,10 +225,9 @@ class MultiHttpResource:
                     responses[tag] = response
                 except Exception as e:
                     # Store error as response
-                    responses[tag] = json.dumps({
-                        'error': str(e),
-                        'type': type(e).__name__
-                    })
+                    responses[tag] = json.dumps(
+                        {"error": str(e), "type": type(e).__name__}
+                    )
 
         # Clear handlers after execution
         self._handlers = []
@@ -244,16 +251,16 @@ class MultiHttpResource:
         Raises:
             NetworkError: If request fails
         """
-        request = handler['request']
+        request = handler["request"]
 
         # Apply headers
         if isinstance(request, urllib.request.Request):
-            for key, value in handler['headers'].items():
+            for key, value in handler["headers"].items():
                 request.add_header(key, value)
 
         # Configure SSL context
         context = None
-        if handler['ignore_ssl']:
+        if handler["ignore_ssl"]:
             context = ssl.create_default_context()
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
@@ -261,18 +268,16 @@ class MultiHttpResource:
         try:
             # Execute request
             response = urllib.request.urlopen(
-                request,
-                timeout=handler['timeout'],
-                context=context
+                request, timeout=handler["timeout"], context=context
             )
 
             # Read and return response
-            return response.read().decode('utf-8')
+            return response.read().decode("utf-8")
 
         except urllib.error.HTTPError as e:
             # Try to read error response
             try:
-                return e.read().decode('utf-8')
+                return e.read().decode("utf-8")
             except:
                 raise NetworkError(f"HTTP {e.code}: {e.reason}", http_status=e.code)
 
@@ -295,8 +300,8 @@ class MultiHttpResource:
         config_headers = self._config.get_http_headers()
         if isinstance(config_headers, list):
             for header in config_headers:
-                if ':' in header:
-                    key, value = header.split(':', 1)
+                if ":" in header:
+                    key, value = header.split(":", 1)
                     headers[key.strip()] = value.strip()
         elif isinstance(config_headers, dict):
             headers.update(config_headers)

@@ -8,4 +8,10 @@ from .order_service import OrderService
 from .installation_instructions_service import InstallationInstructionsService
 from .topup_service import TopupService
 
-__all__ = ["OAuthService", "PackagesService", "OrderService", "TopupService", "InstallationInstructionsService"]
+__all__ = [
+    "OAuthService",
+    "PackagesService",
+    "OrderService",
+    "TopupService",
+    "InstallationInstructionsService",
+]

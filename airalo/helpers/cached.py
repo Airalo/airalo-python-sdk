@@ -29,10 +29,7 @@ class Cached:
 
     @classmethod
     def get(
-        cls,
-        work: Union[Callable[[], Any], Any],
-        cache_name: str,
-        ttl: int = 0
+        cls, work: Union[Callable[[], Any], Any], cache_name: str, ttl: int = 0
     ) -> Any:
         """
         Get cached value or compute and cache it.
@@ -136,7 +133,7 @@ class Cached:
 
         # Read cached data
         try:
-            with open(cache_file, 'rb') as f:
+            with open(cache_file, "rb") as f:
                 return pickle.load(f)
         except (OSError, pickle.PickleError):
             # Corrupted cache file, remove it
@@ -164,7 +161,7 @@ class Cached:
 
         try:
             # Write cache file
-            with open(cache_file, 'wb') as f:
+            with open(cache_file, "wb") as f:
                 pickle.dump(result, f)
 
             # Try to set permissions (may fail on some systems)

@@ -53,11 +53,11 @@ class Crypt:
 
         # Create cipher and encrypt
         cipher = ChaCha20Poly1305(key_bytes)
-        encrypted = cipher.encrypt(nonce, data.encode('utf-8'), None)
+        encrypted = cipher.encrypt(nonce, data.encode("utf-8"), None)
 
         # Combine nonce and encrypted data, then base64 encode
         combined = nonce + encrypted
-        return base64.b64encode(combined).decode('ascii')
+        return base64.b64encode(combined).decode("ascii")
 
     @staticmethod
     def decrypt(data: str, key: str) -> str:
@@ -89,14 +89,14 @@ class Crypt:
             encrypted = base64.b64decode(data)
 
             # Extract nonce and ciphertext
-            nonce = encrypted[:Crypt.NONCE_BYTES]
-            ciphertext = encrypted[Crypt.NONCE_BYTES:]
+            nonce = encrypted[: Crypt.NONCE_BYTES]
+            ciphertext = encrypted[Crypt.NONCE_BYTES :]
 
             # Decrypt
             cipher = ChaCha20Poly1305(key_bytes)
             decrypted = cipher.decrypt(nonce, ciphertext, None)
 
-            return decrypted.decode('utf-8')
+            return decrypted.decode("utf-8")
         except Exception as e:
             raise AiraloException(f"Decryption failed: {e}")
 
@@ -127,7 +127,7 @@ class Crypt:
         try:
             decoded = base64.b64decode(data, validate=True)
             # Verify we can encode it back to the same string
-            return base64.b64encode(decoded).decode('ascii') == data
+            return base64.b64encode(decoded).decode("ascii") == data
         except Exception:
             return False
 
@@ -142,13 +142,13 @@ class Crypt:
         Returns:
             32-byte key
         """
-        key_bytes = key.encode('utf-8')
+        key_bytes = key.encode("utf-8")
 
         # Truncate or pad to exactly 32 bytes
         if len(key_bytes) > Crypt.KEY_BYTES:
-            return key_bytes[:Crypt.KEY_BYTES]
+            return key_bytes[: Crypt.KEY_BYTES]
         elif len(key_bytes) < Crypt.KEY_BYTES:
             # Pad with zeros
-            return key_bytes.ljust(Crypt.KEY_BYTES, b'\0')
+            return key_bytes.ljust(Crypt.KEY_BYTES, b"\0")
 
         return key_bytes

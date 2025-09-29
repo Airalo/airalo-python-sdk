@@ -18,7 +18,7 @@ The SDK supports:
 # Installation
 Install via pip:
 ```bash
-pip install airalo
+pip install airalo-sdk
 ```
 
 # Initialization

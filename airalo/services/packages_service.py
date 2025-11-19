@@ -208,7 +208,7 @@ class PackagesService:
                         "slug": item.get("slug"),
                         "type": package.get("type"),
                         "price": package.get("price"),
-                        "net_price": getattr(package, "net_price", None) if package is not None else None,
+                        "net_price": package.get("net_price"),
                         "amount": package.get("amount"),
                         "day": package.get("day"),
                         "is_unlimited": package.get("is_unlimited"),

@@ -45,7 +45,7 @@ The SDK returns standard Python dicts. You can access keys directly or convert t
 
 `def get_all_packages(flat: bool = False, limit: int | None = None, page: int | None = None) -> dict | None`  
 Fetching all Airalo packages.<br>
-NOTE that depending from the pricing model (field named 'model' in the pricing object) there can be additional fields displayed or hidden. Check the documentation link below for more details.<br> 
+NOTE that depending on from the pricing model (field named 'model' in the pricing object) there can be additional fields displayed or hidden. Check the documentation link below for more details.<br>
 By default the response mirrors the packages REST endpoint (more here: https://developers.partners.airalo.com/get-packages-11883036e0). Passing `flat=True` returns package objects in a single data object, example:
 ```json
 {

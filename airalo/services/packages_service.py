@@ -116,8 +116,8 @@ class PackagesService:
             if not response_data.get("data"):
                 break
 
-            if response_data and response_data['pricing']:
-                result["pricing"] = response_data['pricing']
+            if response_data and "pricing" in response_data:
+                result["pricing"] = response_data["pricing"]
 
             # Append data
             result["data"].extend(response_data["data"])

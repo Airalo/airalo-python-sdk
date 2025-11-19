@@ -116,6 +116,9 @@ class PackagesService:
             if not response_data.get("data"):
                 break
 
+            if response_data and response_data['pricing']:
+                result["pricing"] = response_data['pricing']
+
             # Append data
             result["data"].extend(response_data["data"])
 
@@ -205,7 +208,7 @@ class PackagesService:
                         "slug": item.get("slug"),
                         "type": package.get("type"),
                         "price": package.get("price"),
-                        "net_price": package.get("net_price"),
+                        "net_price": getattr(package, "net_price", None) if package is not None else None,
                         "amount": package.get("amount"),
                         "day": package.get("day"),
                         "is_unlimited": package.get("is_unlimited"),

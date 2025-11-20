@@ -118,7 +118,7 @@ def test_get_packages_paginates_applies_limit_and_sets_auth_header(
 
     out = service.get_packages({"limit": 3})  # limit trims to exactly 3 items
 
-    assert out == {"data": [1, 2, 3]}
+    assert out == {"pricing": {"model": "net_pricing", "discount_percentage": 0}, "data": [1, 2, 3]}
     mock_http.set_headers.assert_called_with(
         {"Authorization": "Bearer toktoktoktoktoktoktok"}
     )

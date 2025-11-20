@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="airalo-python-sdk",
-    version="1.0.0",
+    version="1.0.1",
     author="Airalo",
     author_email="developer@airalo.com",
     description="Python SDK for Airalo Partner API",

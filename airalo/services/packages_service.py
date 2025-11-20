@@ -188,7 +188,7 @@ class PackagesService:
         Returns:
             Flattened package data
         """
-        flattened = {"data": []}
+        flattened = {"data": [], 'pricing': data.get('pricing', [])}
 
         for item in data.get("data", []):
             # Each item represents a country/region

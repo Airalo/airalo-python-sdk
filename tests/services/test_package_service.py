@@ -99,9 +99,9 @@ def test_get_packages_paginates_applies_limit_and_sets_auth_header(
         "airalo.services.packages_service.Cached",
         SimpleNamespace(get=lambda fetcher, key, ttl: fetcher()),
     )
-
     # page 1 -> has data, meta says last_page=2
-    page1 = json.dumps({"data": [1, 2], "meta": {"last_page": 2}})
+    page1 = json.dumps(
+        {"pricing": {"model": "net_pricing", "discount_percentage": 0}, "data": [1, 2], "meta": {"last_page": 2}})
     # page 2 -> has data, no more pages after
     page2 = json.dumps({"data": [3]})
 
@@ -118,7 +118,7 @@ def test_get_packages_paginates_applies_limit_and_sets_auth_header(
 
     out = service.get_packages({"limit": 3})  # limit trims to exactly 3 items
 
-    assert out == {"data": [1, 2, 3]}
+    assert out == {"pricing": {"model": "net_pricing", "discount_percentage": 0}, "data": [1, 2, 3]}
     mock_http.set_headers.assert_called_with(
         {"Authorization": "Bearer toktoktoktoktoktoktok"}
     )

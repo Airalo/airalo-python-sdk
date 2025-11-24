@@ -116,6 +116,9 @@ class PackagesService:
             if not response_data.get("data"):
                 break
 
+            if response_data and "pricing" in response_data:
+                result["pricing"] = response_data["pricing"]
+
             # Append data
             result["data"].extend(response_data["data"])
 
@@ -185,7 +188,7 @@ class PackagesService:
         Returns:
             Flattened package data
         """
-        flattened = {"data": []}
+        flattened = {"data": [], 'pricing': data.get('pricing', [])}
 
         for item in data.get("data", []):
             # Each item represents a country/region

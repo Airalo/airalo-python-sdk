@@ -561,8 +561,8 @@ usage = alo.sim_usage_bulk(["870000000001", "870000000002", "870000000003", "870
 `def get_sim_topups(iccid: str, iso2_country_code: Optional[str] = None)  -> dict | None`<br>
 Fetches available top‑ups for an `iccid`. Full response: https://developers.partners.airalo.com/get-top-up-package-list-11883031e0<br><br>
 Parameters:<br>
-`iccid` - the `iccid` from the eSim order<br>
-`iso2_country_code` - optional parameter to filter topups for a specific iso2 country code. Only applicable if the `iccid` is from a universal eSim<br>
+`iccid` - the `iccid` from the eSIM order<br>
+`iso2_country_code` - optional parameter to filter topups for a specific iso2 country code. Only applicable if the `iccid` is from a universal eSIM<br>
 
 ```python
 available_topups = alo.get_sim_topups(iccid)

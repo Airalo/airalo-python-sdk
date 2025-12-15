@@ -571,14 +571,14 @@ class Airalo:
 
     def get_sim_topups(self, iccid: str, iso2_country_code: Optional[str] = None) -> Optional[Dict]:
         """
-        Get SIM topup history.
+        Get available topups for a SIM.
 
         Args:
             iccid: ICCID of the SIM
-            iso2_country_code: ISO2 country code (optional) Works only with iccid from universal eSim
+            iso2_country_code: Optional ISO2 country code to filter topups. Only applicable for universal eSIMs.
 
         Returns:
-            Topup history or None
+            Available topups or None
         """
         return self._sim.get_topups(iccid, iso2_country_code)
 

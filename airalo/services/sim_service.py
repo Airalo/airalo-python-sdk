@@ -330,14 +330,14 @@ class SimService:
 
     def get_topups(self, iccid: str, iso2_country_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
-        Get SIM topup history (convenience method).
+        Get available topups for a SIM (convenience method).
 
         Args:
             iccid: ICCID of the SIM
-            iso2_country_code: Optional 2-letter country code to filter universal eSim topups
+            iso2_country_code: Optional 2-letter country code to filter universal eSIM topups.
 
         Returns:
-            Topup history or None
+            Available topups or None
         """
         params = {"iccid": iccid}
 

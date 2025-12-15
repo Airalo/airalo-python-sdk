@@ -7,6 +7,7 @@ topup history, and package history.
 
 import json
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlencode
 
 from ..config import Config
 from ..helpers.cached import Cached
@@ -255,6 +256,9 @@ class SimService:
         if endpoint:
             url = f"{url}/{endpoint}"
 
+        if endpoint == ApiConstants.SIMS_TOPUPS and 'filter[country]' in params and params['filter[country]']:
+            url += '?' + urlencode({'filter[country]': params['filter[country]']})
+
         return url
 
     def _is_valid_iccid(self, iccid: Any) -> bool:
@@ -324,17 +328,23 @@ class SimService:
         """
         return self.sim_usage_bulk(iccids)
 
-    def get_topups(self, iccid: str) -> Optional[Dict[str, Any]]:
+    def get_topups(self, iccid: str, iso2_country_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
         Get SIM topup history (convenience method).
 
         Args:
             iccid: ICCID of the SIM
+            iso2_country_code: Optional 2-letter country code to filter universal eSim topups
 
         Returns:
             Topup history or None
         """
-        return self.sim_topups({"iccid": iccid})
+        params = {"iccid": iccid}
+
+        if iso2_country_code:
+            params["filter[country]"] = iso2_country_code
+
+        return self.sim_topups(params)
 
     def get_package_history(self, iccid: str) -> Optional[Dict[str, Any]]:
         """

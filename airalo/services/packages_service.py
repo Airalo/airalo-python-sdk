@@ -338,6 +338,27 @@ class PackagesService:
             {"flat": flat, "limit": limit, "page": page, "type": "global"}
         )
 
+    def get_universal_packages(
+        self,
+        flat: bool = False,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Get universal packages only.
+
+        Args:
+            flat: If True, return flattened response
+            limit: Number of results
+            page: Page number
+
+        Returns:
+            Packages data or None
+        """
+        return self.get_packages(
+            {"flat": flat, "limit": limit, "page": page, "type": "universal"}
+        )
+
     def get_country_packages(
         self, country_code: str, flat: bool = False, limit: Optional[int] = None
     ) -> Optional[Dict[str, Any]]:

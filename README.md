@@ -178,7 +178,7 @@ Fetching global packages. Same behavior as above.
 
 `def get_universal_packages(flat: bool = False, limit: int | None = None, page: int | None = None) -> dict | None`  
 Fetching universal packages.<br/>
-This method will return no results unless Universal Packages are enabled for your account by your Account Manager.
+Note: This method will return no results unless Universal Packages are enabled for your account by your Account Manager.
 
 `def get_country_packages(country_code: str, flat: bool = False, limit: int | None = None) -> dict | None`  
 Fetching country‑specific packages. Same behavior as above.

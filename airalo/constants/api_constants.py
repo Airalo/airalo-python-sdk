@@ -8,8 +8,7 @@ This module contains all API endpoints and URLs used by the Airalo SDK.
 class ApiConstants:
     """API endpoints and URLs for Airalo SDK."""
 
-    # PRODUCTION_URL = "https://partners-api.airalo.com/v2/"
-    PRODUCTION_URL = 'http://api-partners.airalo.local:8081/v2/'
+    PRODUCTION_URL = "https://partners-api.airalo.com/v2/"
 
     # Authentication
     TOKEN_SLUG = "token"

@@ -77,9 +77,11 @@ def test_init_requires_token(mock_config, mock_http, mock_multi_http):
         ("89014103211118510720", True),  # 20 digits
         ("123456789012345678", True),  # 18
         ("1" * 22, True),  # 22
+        ("1" * 16, True),  # 16 (lower boundary)
+        ("12345678901234567", True),  # 17
         ("", False),
         (None, False),
-        ("12345678901234567", False),  # 17
+        ("1" * 15, False),  # 15 (below lower boundary)
         ("1" * 23, False),  # 23
         ("89014103211118510x20", False),  # non-digit
     ],

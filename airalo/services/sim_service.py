@@ -273,8 +273,8 @@ class SimService:
         # Convert to string and check
         iccid_str = str(iccid)
 
-        # ICCID should be 18-22 digits
-        return iccid_str.isdigit() and 18 <= len(iccid_str) <= 22
+        # ICCID should be 16-22 digits
+        return iccid_str.isdigit() and 16 <= len(iccid_str) <= 22
 
     def _get_cache_key(self, url: str, params: Dict[str, Any]) -> str:
         """

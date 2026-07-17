@@ -180,6 +180,10 @@ Fetching local packages. Same behavior as above.
 `def get_global_packages(flat: bool = False, limit: int | None = None, page: int | None = None) -> dict | None`  
 Fetching global packages. Same behavior as above.
 
+`def get_universal_packages(flat: bool = False, limit: int | None = None, page: int | None = None) -> dict | None`  
+Fetching universal packages.<br/>
+Note: This method will return no results unless Universal Packages are enabled for your account by your Account Manager.
+
 `def get_country_packages(country_code: str, flat: bool = False, limit: int | None = None) -> dict | None`  
 Fetching country‑specific packages. Same behavior as above.
 
@@ -559,8 +563,12 @@ usage = alo.sim_usage_bulk(["870000000001", "870000000002", "870000000003", "870
 
 <h2> Sim Topups </h2>
 
-`def get_sim_topups(iccid: str) -> dict | None`  
-Fetches available top‑ups for an `iccid`. Full response: https://developers.partners.airalo.com/get-top-up-package-list-11883031e0
+`def get_sim_topups(iccid: str, iso2_country_code: Optional[str] = None)  -> dict | None`<br>
+Fetches available top‑ups for an `iccid`. Full response: https://developers.partners.airalo.com/get-top-up-package-list-11883031e0<br><br>
+Parameters:<br>
+`iccid` - the `iccid` from the eSIM order<br>
+`iso2_country_code` - optional parameter to filter topups for a specific iso2 country code. Only applicable if the `iccid` is from a universal eSIM<br>
+
 ```python
 available_topups = alo.get_sim_topups(iccid)
 ```

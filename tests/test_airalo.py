@@ -146,11 +146,14 @@ def test_package_methods_delegate_and_return(wire_minimal_monkeypatch):
     out3 = c.get_local_packages(flat=True, limit=7, page=None)
     out4 = c.get_global_packages(flat=False, limit=None, page=None)
     out5 = c.get_country_packages("us", flat=True, limit=9)
+    out6 = c.get_universal_packages(flat=False, limit=None, page=None)
+
     assert out1["called"] == "get_all_packages"
     assert out2["called"] == "get_sim_packages"
     assert out3["called"] == "get_local_packages"
     assert out4["called"] == "get_global_packages"
     assert out5["called"] == "get_country_packages"
+    assert out6["called"] == "get_universal_packages"
 
 
 # ---------- order methods delegation ----------

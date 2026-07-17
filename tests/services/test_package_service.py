@@ -227,9 +227,11 @@ def test_convenience_methods_delegate_to_get_packages(service, monkeypatch):
     service.get_local_packages(flat=True, limit=5, page=None)
     service.get_global_packages(flat=False, limit=None, page=None)
     service.get_country_packages("us", flat=True, limit=7)
+    service.get_universal_packages(flat=False, limit=None, page=None)
 
     assert called[0] == {"flat": True, "limit": 10, "page": 2}
     assert called[1] == {"flat": False, "limit": None, "page": 3, "simOnly": True}
     assert called[2] == {"flat": True, "limit": 5, "page": None, "type": "local"}
     assert called[3] == {"flat": False, "limit": None, "page": None, "type": "global"}
     assert called[4] == {"flat": True, "limit": 7, "country": "US"}
+    assert called[5] == {"flat": False, "limit": None, "page": None, "type": "universal"}

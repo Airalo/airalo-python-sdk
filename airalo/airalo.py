@@ -246,6 +246,25 @@ class Airalo:
         """
         return self._packages.get_global_packages(flat, limit, page)
 
+    def get_universal_packages(
+        self,
+        flat: bool = False,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Optional[Dict]:
+        """
+        Get universal packages.
+
+        Args:
+            flat: If True, return flattened response
+            limit: Number of results per page
+            page: Page number
+
+        Returns:
+            Packages data or None
+        """
+        return self._packages.get_universal_packages(flat, limit, page)
+
     def get_country_packages(
         self, country_code: str, flat: bool = False, limit: Optional[int] = None
     ) -> Optional[Dict]:
@@ -550,17 +569,18 @@ class Airalo:
         """
         return self._sim.get_usage_bulk(iccids)
 
-    def get_sim_topups(self, iccid: str) -> Optional[Dict]:
+    def get_sim_topups(self, iccid: str, iso2_country_code: Optional[str] = None) -> Optional[Dict]:
         """
-        Get SIM topup history.
+        Get available topups for a SIM.
 
         Args:
             iccid: ICCID of the SIM
+            iso2_country_code: Optional ISO2 country code to filter topups. Only applicable for universal eSIMs.
 
         Returns:
-            Topup history or None
+            Available topups or None
         """
-        return self._sim.get_topups(iccid)
+        return self._sim.get_topups(iccid, iso2_country_code)
 
     def get_sim_package_history(self, iccid: str) -> Optional[Dict]:
         """

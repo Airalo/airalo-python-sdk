@@ -9,7 +9,7 @@ class SdkConstants:
     """SDK-specific constants for Airalo SDK."""
 
     # SDK Version
-    VERSION = "1.0.2"
+    VERSION = "1.0.3"
 
     # Order limits
     BULK_ORDER_LIMIT = 50

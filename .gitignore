@@ -5,3 +5,4 @@
 .DS_Store
 test.py
 *__pycache__/
+.claude/settings.local.json

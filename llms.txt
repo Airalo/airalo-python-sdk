@@ -1,0 +1,33 @@
+# Airalo Python SDK
+
+> Official Python SDK (`airalo-sdk`) for the Airalo Partner API. It lets partners fetch eSIM packages, place single, bulk and async orders, buy top-ups, check SIM usage, and manage vouchers, exchange rates and future orders. Authentication, request signing, caching and rate limiting are handled for you. Requires Python >= 3.10.
+
+Getting started:
+
+- Install with `pip install airalo-sdk`.
+- Import and initialise: `from airalo import Airalo` then `alo = Airalo({'client_id': '<YOUR_API_CLIENT_ID>', 'client_secret': '<YOUR_API_CLIENT_SECRET>'})`.
+- Fetch packages: `alo.get_all_packages(flat=True)`.
+- Every method returns a standard Python `dict` / `list` (or `None`). Every error the SDK raises derives from `airalo.AiraloException`.
+- Responses are cached in-process by default (access tokens, packages).
+- Load credentials from environment or secret storage. Never hard-code them.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/README.md): installation, initialization, full method reference ("Methods Interface"), technical notes
+- [Airalo Partner API documentation](https://developers.partners.airalo.com): REST endpoints and full response schemas the SDK wraps
+
+## API reference
+
+- [airalo/airalo.py](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/airalo/airalo.py): the `Airalo` client, every public method with signatures
+- [airalo/__init__.py](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/airalo/__init__.py): public exports and `__version__`
+- [airalo/exceptions/airalo_exception.py](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/airalo/exceptions/airalo_exception.py): exception hierarchy
+
+## Contributing
+
+- [AGENTS.md](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/AGENTS.md): layout, conventions, quality gates and PR rules for changing the SDK
+
+## Optional
+
+- [airalo/config.py](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/airalo/config.py): config keys and validation
+- [pyproject.toml](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/pyproject.toml): package metadata
+- [LICENSE](https://raw.githubusercontent.com/Airalo/airalo-python-sdk/main/LICENSE)

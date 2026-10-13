@@ -11,8 +11,10 @@ The SDK supports:
 - unified JSON responses as standard Python dicts
 - works on Linux, macOS, and Windows
 
+> **Using an AI assistant?** [`llms.txt`](llms.txt) gives LLMs a concise summary of the SDK and how to start using it. Coding agents contributing to this repository should follow [`AGENTS.md`](AGENTS.md).
+
 # Requisites
-- Python >= `3.11`
+- Python >= `3.10`
 - `requests` installed (the SDK depends on it)
 
 # Installation
